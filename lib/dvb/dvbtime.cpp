@@ -470,7 +470,7 @@ void eDVBLocalTimeHandler::updateTime( time_t tp_time, eDVBChannel *chan, int up
 					time_t rtc=getRTC();
 					m_timeOffsetMap[chan->getChannelID()] = rtc-tp_time;
 					new_diff = rtc-linuxTime;  // set enigma time to rtc
-					eDebug("[eDVBLocalTimerHandler] update stored correction to %lld (calced against RTC time)", rtc-tp_time );
+					eDebug("[eDVBLocalTimerHandler] update stored correction to %ld (calced against RTC time)", rtc-tp_time);
 				}
 				else if ( abs(ddiff) <= 120 )
 				{
