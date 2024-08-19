@@ -222,7 +222,7 @@ int loadJPG(ePtr<gPixmap> &result, const char *filename, ePtr<gPixmap> alpha, in
 		return 0;
 
 	struct jpeg_decompress_struct cinfo;
-	struct my_error_mgr jerr
+	struct my_error_mgr jerr;
 	JSAMPARRAY buffer;
 	int row_stride;
 	CFile infile(filename, "rb");
@@ -426,7 +426,7 @@ int loadSVG(ePtr<gPixmap> &result, const char *filename, int cached, int width, 
 		if (sourceWidth > 0)
 			widthScale = (double)width / sourceWidth;
 		if (sourceHeight > 0)
-			heightScale = (double)height / sourceHeight;                
+			heightScale = (double)height / sourceHeight;
 
 		double scale = std::min(widthScale, heightScale);
 		yscale = scale;
