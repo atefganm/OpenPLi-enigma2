@@ -20,12 +20,12 @@ private:
 
 	typedef struct
 	{
-		int					set_id;
-		bool				is_root;
-		int					id;
-		int					default_id;
+		int			set_id;
+		bool			is_root;
+		int			id;
+		int			default_id;
 		connect_choices_t	connect_choices;
-		std::string			input_choices;
+		std::string		input_choices;
 	} tuner_t;
 
 	typedef std::map<int, tuner_t> tuners_t;

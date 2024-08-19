@@ -148,7 +148,7 @@ eFBCTunerManager::eFBCTunerManager(ePtr<eDVBResourceManager> res_mgr)
 	eSmartPtrList<eDVBRegisteredFrontend> &frontends = m_res_mgr->m_frontend;
 	eSmartPtrList<eDVBRegisteredFrontend> &frontends_simulate = m_res_mgr->m_simulate_frontend;
 	tuner_t	tuner;
-	int	fe_id, fbc_prev_set_id;
+	int		fe_id, fbc_prev_set_id;
 
 	if(!m_instance)
 		m_instance = this;
@@ -170,6 +170,7 @@ eFBCTunerManager::eFBCTunerManager(ePtr<eDVBResourceManager> res_mgr)
 #else
 		tuner.set_id = ReadProcInt(fe_id, "fbc_set_id");
 #endif
+
 		if(tuner.set_id >= 0)
 		{
 			if(fbc_prev_set_id != tuner.set_id)
@@ -182,6 +183,7 @@ eFBCTunerManager::eFBCTunerManager(ePtr<eDVBResourceManager> res_mgr)
 #endif
 				tuner.id = 0;
 			}
+
 #ifdef DREAMBOX
 			tuner.is_root = tuner.id < 2;
 #else
@@ -191,7 +193,6 @@ eFBCTunerManager::eFBCTunerManager(ePtr<eDVBResourceManager> res_mgr)
 				tuner.is_root = false;
 
 #endif
-
 			tuner.default_id = tuner.is_root ? tuner.id : 0;
 			m_tuners[fe_id] = tuner;
 			SetProcFBCID(fe_id, tuner.default_id, false);
@@ -215,7 +216,6 @@ eFBCTunerManager::eFBCTunerManager(ePtr<eDVBResourceManager> res_mgr)
 		if(ReadProcInt(FESlotID(it), "fbc_set_id") >= 0)
 			it->m_frontend->set_FBCTuner(true);
 #endif
-
 	}
 }
 
