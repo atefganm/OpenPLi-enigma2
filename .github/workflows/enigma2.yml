@@ -14,8 +14,8 @@ jobs:
   build:
     runs-on: ubuntu-22.04
     env:
-      CC: "gcc-11"
-      CXX: "g++-11"
+      CC: "gcc-13"
+      CXX: "g++-13"
     steps:
     - uses: actions/checkout@v3
     - name: install python packages
