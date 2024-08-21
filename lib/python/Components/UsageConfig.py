@@ -8,6 +8,7 @@ from Components.NimManager import nimmanager
 from Components.Renderer.FrontpanelLed import ledPatterns, PATTERN_ON, PATTERN_OFF, PATTERN_BLINK
 from Components.ServiceList import refreshServiceList, redrawServiceList
 from Components.SystemInfo import BoxInfo
+from os.path import exists, islink, join as pathjoin, normpath
 import os
 import time
 import subprocess
