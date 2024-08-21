@@ -3,6 +3,9 @@ from enigma import eDBoxLCD
 from Components.SystemInfo import BoxInfo
 from Screens.InfoBar import InfoBar
 from Screens.Screen import Screen
+from enigma import getBoxType
+
+model = getBoxType()
 
 
 class dummyScreen(Screen):
@@ -71,7 +74,10 @@ def InitLcd():
 		def setLCDflipped(configElement):
 			ilcd.setFlipped(configElement.value)
 
-		standby_default = 0
+			if getBoxType() in ('dm900','dm920'):
+				standby_default = 4
+			else:
+				standby_default = 1
 
 		ilcd = LCD()
 
