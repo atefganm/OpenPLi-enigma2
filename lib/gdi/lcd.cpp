@@ -8,7 +8,7 @@
 #include <lib/gdi/esize.h>
 #include <lib/base/init.h>
 #include <lib/base/init_num.h>
-#ifdef HAVE_TEXTLCD
+#if defined(HAVE_TEXTLCD) || defined(HAVE_7SEGMENT)
 	#include <lib/base/estring.h>
 #endif
 #include <lib/gdi/glcddc.h>
@@ -61,7 +61,7 @@ void eLCD::unlock()
 	locked = 0;
 }
 
-#ifdef HAVE_TEXTLCD
+#if defined(HAVE_TEXTLCD) || defined(HAVE_7SEGMENT)
 void eLCD::renderText(ePoint start, const char *text)
 {
 	if (lcdfd >= 0 && start.y() < 5)
@@ -138,6 +138,14 @@ eDBoxLCD::eDBoxLCD()
 		setSize(xres, yres, bpp);
 	}
 #endif
+	if (FILE * file = fopen("/proc/stb/lcd/right_half", "w"))
+	{
+		fprintf(file,"skin");
+		fclose(file);
+	}
+	instance = this;
+
+	setSize(xres, yres, bpp);
 }
 
 void eDBoxLCD::setInverted(unsigned char inv)
@@ -219,12 +227,34 @@ int eDBoxLCD::setLCDBrightness(int brightness)
 	return(0);
 }
 
+int eDBoxLCD::setLED(int value, int option)
+{
+	switch(option)
+	{
+		case LED_BRIGHTNESS:
+			eDebug("setLEDNormalState %d", value);
+			if(ioctl(lcdfd, LED_IOCTL_BRIGHTNESS_NORMAL, (unsigned char)value) < 0)
+				eDebug("[LED] can't set led brightness");
+			break;
+		case LED_DEEPSTANDBY:
+			eDebug("setLEDBlinkingTime %d", value);
+			if(ioctl(lcdfd, LED_IOCTL_BRIGHTNESS_DEEPSTANDBY, (unsigned char)value) < 0)
+				eDebug("[LED] can't set led deep standby");
+			break;
+		case LED_BLINKINGTIME:
+			eDebug("setLEDBlinkingTime %d", value);
+			if(ioctl(lcdfd, LED_IOCTL_BLINKING_TIME, (unsigned char)value) < 0)
+				eDebug("[LED] can't set led blinking time");
+			break;
+	}
+}
+
 eDBoxLCD::~eDBoxLCD()
 {
-	if (lcdfd >= 0)
+	if (lcdfd>=0)
 	{
 		close(lcdfd);
-		lcdfd = -1;
+		lcdfd=-1;
 	}
 }
 
@@ -316,7 +346,7 @@ void eDBoxLCD::dumpLCD2PNG(void)
 
 void eDBoxLCD::update()
 {
-#ifndef HAVE_TEXTLCD
+#if !defined(HAVE_TEXTLCD) && !defined(HAVE_7SEGMENT)
 	if (lcdfd < 0)
 		return;
 
@@ -338,10 +368,12 @@ void eDBoxLCD::update()
 					raw[(7 - y) * 132 + (131 - x)] = BIT_SWAP(pix ^ inverted);
 				}
 				else
+				{
 					raw[y * 132 + x] = pix ^ inverted;
+				}
 			}
 		}
-		write(lcdfd, raw, 132 * 8);
+		write(lcdfd, raw, 132*8);
 	}
 	else if (lcd_type == 3)
 	{
@@ -356,10 +388,14 @@ void eDBoxLCD::update()
 				for (unsigned int x = 0; x < width; x++)
 				{
 					if (flipped)
+					{
 						/* 8bpp, no bit swapping */
 						raw[(height - 1 - y) * width + (width - 1 - x)] = _buffer[y * width + x] ^ inverted;
+					}
 					else
+					{
 						raw[y * width + x] = _buffer[y * width + x] ^ inverted;
+					}
 				}
 			}
 			write(lcdfd, raw, _stride * height);
@@ -380,18 +416,19 @@ void eDBoxLCD::update()
 #else
 			write(lcdfd, _buffer, _stride * res.height());
 #endif
+		}
 	}
 	else /* lcd_type == 1 */
 	{
-		unsigned char raw[64 * 64];
+		unsigned char raw[64*64];
 		int x, y;
-		memset(raw, 0, 64 * 64);
-		for (y = 0; y < 64; y++)
+		memset(raw, 0, 64*64);
+		for (y=0; y<64; y++)
 		{
-			int pix = 0;
-			for (x = 0; x < 128 / 2; x++)
+			int pix=0;
+			for (x=0; x<128 / 2; x++)
 			{
-				pix = (_buffer[y * 132 + x * 2 + 2] & 0xF0) | (_buffer[y * 132 + x * 2 + 1 + 2] >> 4);
+				pix = (_buffer[y*132 + x * 2 + 2] & 0xF0) |(_buffer[y*132 + x * 2 + 1 + 2] >> 4);
 				if (inverted)
 					pix = 0xFF - pix;
 				if (flipped)
@@ -403,10 +440,12 @@ void eDBoxLCD::update()
 					raw[(63 - y) * 64 + (63 - x)] = byte;
 				}
 				else
+				{
 					raw[y * 64 + x] = pix;
+				}
 			}
 		}
-		write(lcdfd, raw, 64 * 64);
+		write(lcdfd, raw, 64*64);
 	}
 #endif
 }
