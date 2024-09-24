@@ -164,7 +164,7 @@ void TSAudioInfoWeb::addAudio(int pid, std::string lang, std::string desc, int t
 /* eServiceWebTS                                                       */
 /********************************************************************/
 
-eServiceWebTS::eServiceWebTS(const eServiceReference &url): m_reference(url), m_pump(eApp, 1, "eServiceWebTS")
+eServiceWebTS::eServiceWebTS(const eServiceReference &url): m_reference(url), m_pump(eApp, 1)
 {
 	eDebug("ServiceWebTS construct!");
 	m_filename = url.path.c_str();
@@ -383,7 +383,7 @@ void eServiceWebTS::recv_event(int evt)
 			m_decoder->pause();
 			m_event(this, evStart);
 			m_decoder->play();
-
+			
 		}
 		bool wasnull = !m_audioInfo;
 		m_streamthread->getAudioInfo(m_audioInfo);
@@ -565,7 +565,7 @@ int eServiceWebTS::getCurrentTrack() {
 
 DEFINE_REF(eStreamThreadWeb)
 
-eStreamThreadWeb::eStreamThreadWeb(): m_messagepump(eApp, 0, "eStreamThreadWeb") {
+eStreamThreadWeb::eStreamThreadWeb(): m_messagepump(eApp, 0) {
 	CONNECT(m_messagepump.recv_msg, eStreamThreadWeb::recvEvent);
 	m_running = false;
 }

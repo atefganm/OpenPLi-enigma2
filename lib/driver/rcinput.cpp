@@ -19,8 +19,6 @@ void eRCDeviceInputDev::handleCode(long rccode)
 
 	if (ev->type != EV_KEY)
 		return;
-		
-	eDebug("[eInputDeviceInit] %x %x (%u) %x", ev->value, ev->code, ev->code, ev->type);
 
 	int km = iskeyboard ? input->getKeyboardMode() : eRCInput::kmNone;
 
@@ -90,46 +88,17 @@ void eRCDeviceInputDev::handleCode(long rccode)
 		}
 	}
 
-	if (!remaps.empty())
-	{
-		std::unordered_map<unsigned int, unsigned int>::iterator i = remaps.find(ev->code);
-		if (i != remaps.end())
-		{
-			eDebug("[eRCDeviceInputDev] map: %u->%u", i->first, i->second);
-			ev->code = i->second;
-		}
-	}
-	else
-	{
 #if KEY_PLAY_ACTUALLY_IS_KEY_PLAYPAUSE
-		if (ev->code == KEY_PLAY)
+	if (ev->code == KEY_PLAY)
+	{
+		if (id == "dreambox advanced remote control (native)")
 		{
-			if ((id == "dreambox advanced remote control (native)")  || (id == "bcm7325 remote control"))
-			{
-				/* 8k rc has a KEY_PLAYPAUSE key, which sends KEY_PLAY events. Correct this, so we do not have to place hacks in the keymaps. */
-				ev->code = KEY_PLAYPAUSE;
-			}
+			/* 8k rc has a KEY_PLAYPAUSE key, which sends KEY_PLAY events. Correct this, so we do not have to place hacks in the keymaps. */
+			ev->code = KEY_PLAYPAUSE;
 		}
-#endif
-
-#if KEY_VIDEO_TO_KEY_FAVORITES
-		if (ev->code == KEY_VIDEO)
-		{
-			/* formuler rcu fav key send key_media change this to  KEY_FAVORITES */
-			ev->code = KEY_FAVORITES;
-		}
-#endif
-
-#if KEY_BOOKMARKS_TO_KEY_MEDIA
-		if (ev->code == KEY_BOOKMARKS)
-		{
-			/* formuler and triplex remote send wrong keycode */
-			ev->code = KEY_MEDIA;
-		}
-#endif
 	}
+#endif
 
-	eDebug("[eRCDeviceInputDev] emit: %u", ev->value); // ZZ
 	switch (ev->value)
 	{
 		case 0:
@@ -142,12 +111,6 @@ void eRCDeviceInputDev::handleCode(long rccode)
 			input->keyPressed(eRCKey(this, ev->code, eRCKey::flagRepeat)); /*emit*/
 			break;
 	}
-}
-
-int eRCDeviceInputDev::setKeyMapping(const std::unordered_map<unsigned int, unsigned int>& remaps_p)
-{
-	remaps = remaps_p;
-	return eRCInput::remapOk;
 }
 
 eRCDeviceInputDev::eRCDeviceInputDev(eRCInputEventDriver *driver, int consolefd)
@@ -206,7 +169,8 @@ public:
 		{
 			char filename[32];
 			sprintf(filename, "/dev/input/event%d", i);
-			if (::access(filename, R_OK) < 0) break;
+			if (::access(filename, R_OK) < 0)
+				break;
 			add(filename);
 			++i;
 		}
@@ -224,6 +188,7 @@ public:
 
 	void add(const char* filename)
 	{
+		eDebug("[eInputDeviceInit] adding device %s", filename);
 		eRCInputEventDriver *p = new eRCInputEventDriver(filename);
 		items.push_back(new element(filename, p, new eRCDeviceInputDev(p, consoleFd)));
 	}

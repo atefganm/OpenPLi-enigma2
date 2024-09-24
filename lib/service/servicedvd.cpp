@@ -168,7 +168,7 @@ DEFINE_REF(eServiceDVD);
 
 eServiceDVD::eServiceDVD(eServiceReference ref):
 	m_ref(ref), m_ddvdconfig(ddvd_create()), m_subtitle_widget(0), m_state(stIdle),
-	m_current_trick(0), m_pump(eApp, 1, "ServiceDVD"), m_width(-1), m_height(-1),
+	m_current_trick(0), m_pump(eApp, 1), m_width(-1), m_height(-1),
 	m_aspect(-1), m_framerate(-1), m_progressive(-1)
 {
 	int aspect = DDVD_16_9;
@@ -1030,7 +1030,7 @@ void eServiceDVD::loadCuesheet()
 			if (stat(m_ref.path.c_str(), &st) == 0)
 			{
 				char buf[128];
-				snprintf(buf, 128, "%lx", st.st_mtime);
+				snprintf(buf, 128, "%llx", st.st_mtime);
 				filename += buf;
 			}
 			else
@@ -1120,7 +1120,7 @@ void eServiceDVD::saveCuesheet()
 		if (stat("/home/root", &st) == 0 && stat(filename.c_str(), &st) != 0)
 			if (mkdir(filename.c_str(), 0755))
 				return; // cannot create directory so no point in trying to save cue data
-
+			
 		filename += "/";
 		if (m_ddvd_titlestring[0] != '\0')
 			filename += m_ddvd_titlestring;
@@ -1130,7 +1130,7 @@ void eServiceDVD::saveCuesheet()
 			if (stat(m_ref.path.c_str(), &st) == 0)
 			{
 				char buf[128];
-				snprintf(buf, 128, "%lx", st.st_mtime);
+				snprintf(buf, 128, "%llx", st.st_mtime);
 				filename += buf;
 			}
 			else
@@ -1171,7 +1171,6 @@ void eServiceDVD::saveCuesheet()
 
 eAutoInitPtr<eServiceFactoryDVD> init_eServiceFactoryDVD(eAutoInitNumbers::service+1, "eServiceFactoryDVD");
 
-#if PY_MAJOR_VERSION >= 3
 	static struct PyModuleDef servicedvd_moduledef = {
 		PyModuleDef_HEAD_INIT,
 		"servicedvd",	/* m_name */
@@ -1183,14 +1182,9 @@ eAutoInitPtr<eServiceFactoryDVD> init_eServiceFactoryDVD(eAutoInitNumbers::servi
 		NULL,			/* m_clear */
 		NULL,			/* m_free */
 	};
-#endif
 
 PyMODINIT_FUNC
 initservicedvd(void)
 {
-#if PY_MAJOR_VERSION >= 3
-	PyModule_Create(&servicedvd_moduledef);
-#else
-	Py_InitModule("servicedvd", NULL);
-#endif
+	return PyModule_Create(&servicedvd_moduledef);
 }

@@ -219,7 +219,6 @@ protected:
 	eDVBServicePMTHandler m_service_handler_timeshift;
 	eDVBServiceEITHandler m_event_handler;
 	int m_current_audio_pid;
-	int m_current_video_pid_type;
 
 	eDVBServicePlay(const eServiceReference &ref, eDVBService *service, bool connect_event=true);
 
@@ -230,7 +229,6 @@ protected:
 	void serviceEventTimeshift(int event);
 	sigc::signal<void(iPlayableService*,int)> m_event;
 
-		/* fix tuxtxt for streams */
 	bool m_is_stream;
 
 		/* pvr */

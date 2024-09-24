@@ -89,7 +89,7 @@ class eIPTVDBItem
 		int adra_pid;
 		int subtitle_pid;
 		int v_pid;
-		eIPTVDBItem(const std::string sref, const int ampegpid, const int aac3pid, const int aac4pid, const int addppid, const int aaachpid,
+		eIPTVDBItem(const std::string sref, const int ampegpid, const int aac3pid, const int aac4pid, const int addppid, const int aaachpid, 
 					const int aaacpid, const int adrapid, const int subtitlepid, const int vpid) {
 			s_ref = sref;
 			ampeg_pid = ampegpid;
@@ -124,7 +124,7 @@ class eDVBDB: public iDVBChannelList
 	std::map<eServiceReferenceDVB, ePtr<eDVBService> > m_services;
 
 	std::map<std::string, eBouquet> m_bouquets;
-
+	
 	bool m_numbering_mode;
 	int m_load_unlinked_userbouquets;
 #ifdef SWIG
@@ -180,6 +180,7 @@ public:
 //////
 	void loadBouquet(const char *path);
 	void deleteBouquet(const std::string filename);
+	eServiceReference searchReference(int tsid, int onid, int sid);
 	void searchAllReferences(std::vector<eServiceReference> &result, int tsid, int onid, int sid);
 	eDVBDB();
 	virtual ~eDVBDB();
@@ -188,7 +189,6 @@ public:
 	void resetLcnDB();
 	void readLcnDBFile();
 #endif
-	eServiceReference searchReference(int tsid, int onid, int sid);
 	void setNumberingMode(bool numberingMode);
 	void setLoadUnlinkedUserbouquets(int value) { m_load_unlinked_userbouquets=value; }
 	void renumberBouquet();

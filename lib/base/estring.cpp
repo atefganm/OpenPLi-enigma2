@@ -7,27 +7,11 @@
 #include <map>
 #include <lib/base/eerror.h>
 #include <lib/base/encoding.h>
-#include <lib/base/esimpleconfig.h>
 #include <lib/base/estring.h>
 #include "freesatv2.h"
 #include "big5.h"
 #include "gb18030.h"
 #include <Python.h>
-
-bool contains(const std::string &str, const std::string &substr)
-{
-	return substr.size() && str.size() >= substr.size() && str.find(substr) != std::string::npos;
-}
-
-bool endsWith(const std::string &str, const std::string &suffix)
-{
-	return suffix.size() && str.size() >= suffix.size() && str.find(suffix) + suffix.size() == str.size();
-}
-
-bool startsWith(const std::string& str, const std::string& prefix)
-{
-	return prefix.size() && str.size() >= prefix.size() && str.find(prefix) == 0;
-}
 
 std::string buildShortName( const std::string &str )
 {
@@ -46,9 +30,6 @@ std::string buildShortName( const std::string &str )
 
 void undoAbbreviation(std::string &str1, std::string &str2)
 {
-	if (!eSimpleConfig::getBool("config.epg.joinAbbreviatedEventNames", true))
-		return;
-
 	std::string s1 = str1;
 	std::string s2 = str2;
 
@@ -135,34 +116,6 @@ void undoAbbreviation(std::string &str1, std::string &str2)
 
 	str1 = s1;
 	str2 = s2;
-}
-
-void removePrefixesFromEventName(std::string &name, std::string &description)
-{
-	int eventNamePrefixMode = eSimpleConfig::getInt("config.epg.eventNamePrefixMode", 0);
-	if (eventNamePrefixMode == 0)
-		return;
-
-	const char* titlePrefixes = eSimpleConfig::getString("config.epg.eventNamePrefixes", "").c_str();
-	size_t prefixLength;
-	while ((prefixLength = strcspn(titlePrefixes, "|")))
-	{
-		if (name.size() >= prefixLength && name.find(titlePrefixes, 0, prefixLength) == 0)
-		{
-			// remove the unwanted prefix
-			name.erase(0, prefixLength);
-			// and any subsequent spaces
-			name.erase(0, name.find_first_not_of(" "));
-			if (eventNamePrefixMode == 2)
-			{
-				description += " [";
-				description += std::string(titlePrefixes, prefixLength);
-				description += "]";
-			}
-			break;
-		}
-		titlePrefixes += prefixLength + 1;
-	}
 }
 
 std::string getNum(int val, int sys)
@@ -649,13 +602,13 @@ std::string convertDVBUTF8(const unsigned char *data, int len, int table, int ts
 			if (table != 11)
 				table = data[i] + 4;
 			++i;
-/*			eTrace("[convertDVBUTF8] (1..11)text encoded in ISO-8859-%d", table);  */
+			eTrace("[convertDVBUTF8] (1..11)text encoded in ISO-8859-%d", table);
 			break;
 		case ISO8859_xx:
 		{
 			int n = data[++i] << 8;
 			n |= (data[++i]);
-/*			eTrace("[convertDVBUTF8] (0x10)text encoded in ISO-8859-%d", n);  */
+			eTrace("[convertDVBUTF8] (0x10)text encoded in ISO-8859-%d", n);
 			++i;
 			switch(n)
 			{
@@ -835,12 +788,11 @@ std::string convertDVBUTF8(const unsigned char *data, int len, int table, int ts
 	//	table, (unsigned int)tsidonid >> 16, tsidonid & 0xFFFFU,
 	//	string_to_hex(std::string((char*)data, len < 15 ? len : 15)).c_str(),
 	//	output.c_str());
-
 	// replace EIT CR/LF with standard newline:
 	output = replace_all(replace_all(output, "\xC2\x8A", "\n"), "\xEE\x82\x8A", "\n");
-
 	// remove character emphasis control characters:
 	output = replace_all(replace_all(replace_all(replace_all(output, "\xC2\x86", ""), "\xEE\x82\x86", ""), "\xC2\x87", ""), "\xEE\x82\x87", "");
+
 	return output;
 }
 
@@ -959,6 +911,7 @@ int isUTF8(const std::string &string)
 	return 1; // can be UTF8 (or pure ASCII, at least no non-UTF-8 8bit characters)
 }
 
+
 std::string repairUTF8(const char *szIn, int len)
 {
 	Py_ssize_t sz = len;
@@ -967,6 +920,7 @@ std::string repairUTF8(const char *szIn, int len)
 	Py_DECREF(pyinput);
 	return res;
 }
+
 
 unsigned int truncateUTF8(std::string &s, unsigned int newsize)
 {
@@ -977,14 +931,14 @@ unsigned int truncateUTF8(std::string &s, unsigned int newsize)
 
 	if (len > idx){
 		while (idx > 0) {
-			if (s[idx] < 0x80 || (s[idx] & 0xc0) == 0xc0){
-				if (s[idx] < 0x80)
+			if (!(s.at(idx) & 0x80) || (s.at(idx) & 0xc0) == 0xc0){
+				if (!(s.at(idx) & 0x80))
 					idx++;
-				else if ((s[idx] & 0xF8) == 0xf0 && n == 3)
+				else if ((s.at(idx) & 0xF8) == 0xf0 && n == 3)
 					idx += n + 1;
-				else if ((s[idx] & 0xF0) == 0xe0 && n == 2)
+				else if ((s.at(idx) & 0xF0) == 0xe0 && n == 2)
 					idx += n + 1;
-				else if ((s[idx] & 0xE0) == 0xc0 && n == 1)
+				else if ((s.at(idx) & 0xE0) == 0xc0 && n == 1)
 					idx += n + 1;
 				break;
 			}

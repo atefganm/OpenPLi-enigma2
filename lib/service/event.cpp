@@ -206,9 +206,9 @@ bool eServiceEvent::loadLanguage(Event *evt, const std::string &lang, int tsidon
 		m_extended_description += m_extended_description_items;
 		m_extended_description_items = "";
 	}
+
 	// hack to fix split titles
 	undoAbbreviation(m_event_name, m_short_description);
-	removePrefixesFromEventName(m_event_name, m_short_description);
 
 	if(eServiceEvent::m_UTF8CorrectMode > 0)
 	{
@@ -231,6 +231,7 @@ bool eServiceEvent::loadLanguage(Event *evt, const std::string &lang, int tsidon
 			m_extended_description = repairUTF8(m_extended_description.c_str(), m_extended_description.size());
 		}
 	}
+
 	return retval;
 }
 
@@ -315,7 +316,7 @@ RESULT eServiceEvent::getGenreData(ePtr<eGenreData> &dest) const
 	return -1;
 }
 
-PyObject *eServiceEvent::getGenreDataList() const
+PyObject *eServiceEvent::getGenreData() const
 {
 	ePyObject ret = PyList_New(m_genres.size());
 	int cnt=0;
@@ -343,7 +344,7 @@ RESULT eServiceEvent::getParentalData(ePtr<eParentalData> &dest) const
 	return -1;
 }
 
-PyObject *eServiceEvent::getParentalDataList() const
+PyObject *eServiceEvent::getParentalData() const
 {
 	ePyObject ret = PyList_New(m_ratings.size());
 	int cnt = 0;
@@ -373,7 +374,7 @@ RESULT eServiceEvent::getComponentData(ePtr<eComponentData> &dest, int tagnum) c
 	return -1;
 }
 
-PyObject *eServiceEvent::getComponentDataList() const
+PyObject *eServiceEvent::getComponentData() const
 {
 	ePyObject ret = PyList_New(m_component_data.size());
 	int cnt = 0;

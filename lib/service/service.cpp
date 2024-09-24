@@ -37,7 +37,7 @@ RESULT eServiceReference::parseNameAndProviderFromName(std::string &sourceName, 
 	return 0;
 }
 
-void eServiceReference::eServiceReferenceBase(const std::string &string)
+eServiceReference::eServiceReference(const std::string &string)
 {
 	const char *c = string.c_str();
 	int pathl = 0;
@@ -131,25 +131,12 @@ void eServiceReference::eServiceReferenceBase(const std::string &string)
 
 	path = urlDecode(path);
 	name = urlDecode(name);
-
+	
 	std::string res_name = "";
 	std::string res_provider = "";
 	eServiceReference::parseNameAndProviderFromName(name, res_name, res_provider);
 	name = res_name;
 	prov = res_provider;
-}
-
-eServiceReference::eServiceReference(const std::string &string)
-{
-	/* eDebug("[eServiceReference][std]"); */
-	eServiceReferenceBase(string);
-}
-
-eServiceReference::eServiceReference(const char* string2)
-{
-	std::string string(string2);
-	/* eDebug("[eServiceReference][char]"); */
-	eServiceReferenceBase(string);
 }
 
 std::string eServiceReference::toString() const
@@ -172,8 +159,14 @@ std::string eServiceReference::toString() const
 		ret += ':';
 		ret += encode(name);
 	}
-	if (!prov.empty()) {
-		ret += "•" + prov;
+	
+	std::string fullName = ret;
+	std::string provPart = "•";
+	if (!prov.empty())
+	{
+		provPart += prov;
+		if (fullName.find(provPart) == std::string::npos)
+			fullName += provPart;
 	}
 	return ret;
 }
@@ -192,22 +185,6 @@ std::string eServiceReference::toCompareString() const
 	}
 	ret += ':';
 	ret += encode(path);
-	return ret;
-}
-
-std::string eServiceReference::toReferenceString() const
-{
-	std::string ret;
-	ret.reserve((6 * sizeof(data)/sizeof(*data)) + 8); /* Estimate required space */
-
-	ret += getNum(type);
-	ret += ":0";
-	for (unsigned int i=0; i<sizeof(data)/sizeof(*data); ++i)
-	{
-		ret += ':';
-		ret += getNum(data[i], 0x10);
-	}
-	ret += ':';
 	return ret;
 }
 
