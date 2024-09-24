@@ -31,6 +31,8 @@ DEFINE_REF(eDVBRegisteredDemux);
 
 DEFINE_REF(eDVBAllocatedFrontend);
 
+int fd0lock = -1;
+
 void eDVBRegisteredFrontend::closeFrontend()
 {
 	if (!m_inuse && m_frontend->closeFrontend()) // frontend busy
@@ -114,9 +116,54 @@ eDVBResourceManager::eDVBResourceManager()
 
 	setUsbTuner();
 
+	int fd = open("/proc/stb/info/model", O_RDONLY);
+	char tmp[16];
+	int rd = fd >= 0 ? read(fd, tmp, sizeof(tmp)) : 0;
+	if (fd >= 0)
+		close(fd);
+
+	if (!strncmp(tmp, "dm7025\n", rd))
+		m_boxtype = DM7025;
+	else if (!strncmp(tmp, "dm8000\n", rd))
+		m_boxtype = DM8000;
+	else if (!strncmp(tmp, "dm800\n", rd))
+		m_boxtype = DM800;
+	else if (!strncmp(tmp, "dm500hd\n", rd))
+		m_boxtype = DM500HD;
+	else if (!strncmp(tmp, "dm800se\n", rd))
+		m_boxtype = DM800SE;
+	else if (!strncmp(tmp, "dm7020hd\n", rd))
+		m_boxtype = DM7020HD;
+	else if (!strncmp(tmp, "dm7080\n", rd))
+		m_boxtype = DM7080;
+	else if (!strncmp(tmp, "dm820\n", rd))
+		m_boxtype = DM820;
+	else if (!strncmp(tmp, "dm520\n", rd))
+		m_boxtype = DM520;
+	else if (!strncmp(tmp, "dm525\n", rd))
+		m_boxtype = DM525;
+	else if (!strncmp(tmp, "dm900\n", rd))
+		m_boxtype = DM900;
+	else if (!strncmp(tmp, "dm920\n", rd))
+		m_boxtype = DM920;
+	else if (!strncmp(tmp, "one\n", rd))
+		m_boxtype = DREAMONE;
+	else if (!strncmp(tmp, "two\n", rd))
+		m_boxtype = DREAMTWO;
+	else if (!strncmp(tmp, "seven\n", rd))
+		m_boxtype = DREAMSEVEN;
+	else {
+		eDebug("boxtype detection via /proc/stb/info not possible... use fallback via demux count!\n");
+		if (m_demux.size() == 3)
+			m_boxtype = DM800;
+		else if (m_demux.size() < 5)
+			m_boxtype = DM7025;
+		else
+			m_boxtype = DM8000;
+	}
+
 	eDebug("[eDVBResourceManager] found %zd adapter, %zd frontends(%zd sim) and %zd demux",
 		m_adapter.size(), m_frontend.size(), m_simulate_frontend.size(), m_demux.size());
-
 	m_fbcmng = new eFBCTunerManager(instance);
 
 	CONNECT(m_releaseCachedChannelTimer->timeout, eDVBResourceManager::releaseCachedChannel);
@@ -409,7 +456,7 @@ eDVBUsbAdapter::eDVBUsbAdapter(int nr)
 		goto error;
 	}
 
-#if _IOC_NONE > 0				/* MIPS receivers return _IOC_NONE=1 */
+#if _IOC_NONE > 0		/* MIPS receivers return _IOC_NONE=1 */
 #define VTUNER_GET_MESSAGE      1
 #define VTUNER_SET_RESPONSE     2
 #define VTUNER_SET_NAME         3
@@ -418,7 +465,7 @@ eDVBUsbAdapter::eDVBUsbAdapter(int nr)
 #define VTUNER_SET_FE_INFO      6
 #define VTUNER_SET_NUM_MODES    7
 #define VTUNER_SET_MODES        8
-#else							/* ARM receivers return _IOC_NONE=0 */
+#else				/* ARM receivers return _IOC_NONE=0 */
 #define VTUNER_GET_MESSAGE     11
 #define VTUNER_SET_RESPONSE    12
 #define VTUNER_SET_NAME        13
@@ -430,6 +477,7 @@ eDVBUsbAdapter::eDVBUsbAdapter(int nr)
 #endif
 #define VTUNER_SET_DELSYS      32
 #define VTUNER_SET_ADAPTER     33
+
 	ioctl(vtunerFd, VTUNER_SET_NAME, name);
 	ioctl(vtunerFd, VTUNER_SET_TYPE, type);
 	ioctl(vtunerFd, VTUNER_SET_FE_INFO, &fe_info);
@@ -966,7 +1014,10 @@ RESULT eDVBResourceManager::allocateFrontend(ePtr<eDVBAllocatedFrontend> &fe, eP
 		}
 
 		if (c)	/* if we have at least one frontend which is compatible with the source, flag this. */
+		{
+			// eDebug("[eDVBResourceManager] allocateFrontend, score=%d", c);
 			foundone = 1;
+		}
 
 		if (!i->m_inuse)
 		{
@@ -1808,9 +1859,11 @@ void eDVBChannel::cueSheetEvent(int event)
 				eDebug("[eDVBChannel] skipmode ratio is %lld:90000, bitrate is %d bit/s", m_cue->m_skipmode_ratio, bitrate);
 						/* i agree that this might look a bit like black magic. */
 				m_skipmode_n = 512*1024; /* must be 1 iframe at least. */
-				//* The / and * are done in order, resulting in a distinct integer
-				// truncation after bitrate / 8 / 90000
-				// I don't think that this is intended*/
+// The / and * are done in order, resulting in a distinct integer
+// truncation after bitrate / 8 / 90000
+// I don't think that this is intended...
+// github.com/OpenViX/enigma2/commit/33d172b5a3ad1b22d69ce60c2102552537b77929
+//				m_skipmode_m = bitrate / 8 / 90000 * m_cue->m_skipmode_ratio / 8;
 				m_skipmode_frames = m_cue->m_skipmode_ratio / 90000;
 				m_skipmode_m = (bitrate / 8) * (m_skipmode_frames / 8);
 				m_skipmode_frames_remainder = 0;
@@ -1910,7 +1963,7 @@ void eDVBChannel::getNextSourceSpan(off_t current_offset, size_t bytes_read, off
 	if (m_skipmode_m)
 	{
 		int frames_to_skip = m_skipmode_frames + m_skipmode_frames_remainder;
-		//eDebug("[eDVBChannel] we are at %llu, and we try to skip %d+%d frames from here", current_offset, m_skipmode_frames, m_skipmode_frames_remainder);
+		//eDebug("[eDVBChannel] we are at %lld, and we try to skip %d+%d frames from here", current_offset, m_skipmode_frames, m_skipmode_frames_remainder);
 		size_t iframe_len;
 		off_t iframe_start = current_offset;
 		int frames_skipped = frames_to_skip;
@@ -2082,13 +2135,13 @@ void eDVBChannel::getNextSourceSpan(off_t current_offset, size_t bytes_read, off
 				/* when skipping reverse, however, choose the zone before. */
 				/* This returns a size 0 block, in case you noticed... */
 				--i;
-				eDebug("[eDVBChannel] skip to previous block, which is %ju..%ju", i->first, i->second);
+				eDebug("[eDVBChannel] skip to previous block, which is %jd..%jd", (intmax_t)i->first, (intmax_t)i->second);
 				size_t len = diff_upto(i->second, i->first, max);
 				start = i->second - len;
 				eDebug("[eDVBChannel] skipping to %jd, %zd", (intmax_t)start, len);
 			}
 
-			eDebug("[eDVBChannel] result: %jd, %zx (%ju %ju)", (intmax_t)start, size, i->first, i->second);
+			eDebug("[eDVBChannel] result: %jd, %zx (%jd %jd)", (intmax_t)start, size, (intmax_t)i->first, (intmax_t)i->second);
 			return;
 		}
 	}

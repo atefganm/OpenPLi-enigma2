@@ -129,8 +129,8 @@ int eDVBCIResourceManagerSession::doAction()
 				{0x00, 0x8c, 0x10, 0x04}, // content ctrl 4
 				{0x00, 0x8d, 0x10, 0x01}, // Host lang ctrl
 				{0x00, 0x8e, 0x10, 0x01}, // Cam upgrade
-//				{0x00, 0x8f, 0x10, 0x01}, // operator profile 1
-//				{0x00, 0x8f, 0x10, 0x02}, // operator profile 2
+				//{0x00, 0x8f, 0x10, 0x01}, // operator profile 1
+				//{0x00, 0x8f, 0x10, 0x02}, // operator profile 2
 //				{0x00, 0x97, 0x10, 0x01},
 //				{0x00, 0x60, 0x60, 0x03},
 //				{0x00, 0x04, 0x10, 0x01},
@@ -142,7 +142,7 @@ int eDVBCIResourceManagerSession::doAction()
 		const void *p = ciplus ? (operator_profile_disabled ? data_v2_no_operator : data_v2) : data;
 		int len = ciplus ? (operator_profile_disabled ? sizeof(data_v2_no_operator) : sizeof(data_v2)) : sizeof(data);
 		sendAPDU(tag, p, len);
-		state = stateFinal;
+		state=stateFinal;
 		return 0;
 	}
 	case stateFinal:
