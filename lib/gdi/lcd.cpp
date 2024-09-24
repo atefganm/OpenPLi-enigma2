@@ -247,6 +247,7 @@ int eDBoxLCD::setLED(int value, int option)
 				eDebug("[LED] can't set led blinking time");
 			break;
 	}
+	return(0);
 }
 
 eDBoxLCD::~eDBoxLCD()
@@ -299,6 +300,7 @@ void eDBoxLCD::dumpLCD2PNG(void)
 					}
 					savePNG("/tmp/lcd.png", pixmap32);
 				}
+				break;
 			case 16:
 				{
 					for (int y = lcd_hight; y != 0; --y)
