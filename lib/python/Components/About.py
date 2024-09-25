@@ -1,10 +1,25 @@
 # -*- coding: utf-8 -*-
+import struct
+import socket
+import fcntl
 import os
 import time
 import re
 from Tools.HardwareInfo import HardwareInfo
+from builtins import round
+
+from boxbranding import getBoxType, getMachineBuild, getImageType, getImageVersion
 from Components.SystemInfo import BoxInfo
 from sys import maxsize, modules, version_info
+from Tools.Directories import fileReadLine
+from subprocess import PIPE, Popen
+
+MODULE_NAME = __name__.split(".")[-1]
+
+
+def getModelString():
+	model = getBoxType()
+	return model
 
 
 def getVersionString():
@@ -80,6 +95,10 @@ def getffmpegVersionString():
 
 def getKernelVersionString():
 	return BoxInfo.getItem("kernel")
+
+
+def getChipSetString():
+	return str(BoxInfo.getItem("ChipsetString"))
 
 
 def getHardwareTypeString():

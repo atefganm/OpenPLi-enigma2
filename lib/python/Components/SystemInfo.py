@@ -1,8 +1,21 @@
 import re
 from hashlib import md5
+from os import R_OK, access, listdir, walk
 from ast import literal_eval
+
+from os.path import exists as fileAccess, isdir, isfile, join
+from re import findall
+from subprocess import PIPE, Popen
 from enigma import Misc_Options, eDVBCIInterfaces, eDVBResourceManager, eGetEnigmaDebugLvl
-from Tools.Directories import SCOPE_PLUGINS, fileCheck, fileExists, fileHas, pathExists, resolveFilename
+
+from Components.RcModel import rc_model
+from Tools.Directories import SCOPE_PLUGINS, SCOPE_LIBDIR, SCOPE_SKIN, fileCheck, fileReadLine, fileReadLines, resolveFilename, isPluginInstalled, fileExists, fileHas, fileReadLine, pathExists
+from Tools.HardwareInfo import HardwareInfo
+from boxbranding import getBoxType, getMachineBuild, getBrandOEM, getMachineMtdRoot
+
+MODULE_NAME = __name__.split(".")[-1]
+ENIGMA_KERNEL_MODULE = "enigma.ko"
+PROC_PATH = "/proc/enigma"
 
 
 class immutableDict(dict):
@@ -100,6 +113,18 @@ class BoxInformation:
 
 BoxInfo = BoxInformation()
 
+ARCHITECTURE = BoxInfo.getItem("architecture")
+BRAND = BoxInfo.getItem("brand")
+MODEL = BoxInfo.getItem("model")
+SOC_FAMILY = BoxInfo.getItem("socfamily")
+DISPLAYTYPE = BoxInfo.getItem("displaytype")
+MTDROOTFS = BoxInfo.getItem("mtdrootfs")
+DISPLAYMODEL = BoxInfo.getItem("displaymodel")
+DISPLAYBRAND = BoxInfo.getItem("displaybrand")
+MACHINEBUILD = MODEL
+
+def getBoxDisplayName():  # This function returns a tuple like ("BRANDNAME", "BOXNAME")
+	return (DISPLAYBRAND, DISPLAYMODEL)
 
 # Parse the boot commandline.
 #
@@ -133,6 +158,44 @@ def getBootdevice():
 		dev = dev[:-1]
 	return dev
 
+
+model = getBoxType()
+
+
+def getChipsetString():
+	if MODEL in ("dm7080", "dm820"):
+		chipset = "7435"
+	elif MODEL in ("dm520", "dm525"):
+		chipset = "73625"
+	elif MODEL in ("dm900", "dm920", "et13000"):
+		chipset = "7252S"
+	elif MODEL in ("hd51", "vs1500", "h7", "h17"):
+		chipset = "7251S"
+	elif MODEL in ("dreamone", "dreamtwo"):
+		chipset = "S922X"
+	else:
+		chipset = fileReadLine("/proc/stb/info/chipset", default=_("Undefined"), source=MODULE_NAME)
+		chipset = chipset.lower().replace("\n", "").replace("bcm", "").replace("brcm", "").replace("sti", "")
+	return chipset
+
+
+def getModuleLayout():
+	modulePath = BoxInfo.getItem("enigmamodule")
+	if modulePath:
+		process = Popen(("/sbin/modprobe", "--dump-modversions", modulePath), stdout=PIPE, stderr=PIPE, universal_newlines=True)
+		stdout, stderr = process.communicate()
+		if process.returncode == 0:
+			for detail in stdout.split("\n"):
+				if "module_layout" in detail:
+					return detail.split("\t")[0]
+	return None
+
+BoxInfo.setItem("DebugLevel", eGetEnigmaDebugLvl())
+BoxInfo.setItem("InDebugMode", eGetEnigmaDebugLvl() >= 4)
+BoxInfo.setItem("ModuleLayout", getModuleLayout())
+
+model = HardwareInfo().get_device_model()
+
 #This line makes the new BoxInfo backwards compatible with SystemInfo without duplicating the dictionary.
 SystemInfo = BoxInfo.boxInfo
 from Tools.Multiboot import getMultibootStartupDevice, getMultibootslots  # This import needs to be here to avoid a SystemInfo load loop!
@@ -159,6 +222,7 @@ def setBoxInfoItems():
 	BoxInfo.setItem("LCDsymbol_timeshift", fileCheck("/proc/stb/lcd/symbol_timeshift"))
 	BoxInfo.setItem("LCDshow_symbols", (model.startswith("et9") or model in ("hd51", "vs1500")) and fileCheck("/proc/stb/lcd/show_symbols"))
 	BoxInfo.setItem("LCDsymbol_hdd", model in ("hd51", "vs1500") and fileCheck("/proc/stb/lcd/symbol_hdd"))
+	BoxInfo.setItem("ChipsetString", getChipsetString(), immutable=True)
 	BoxInfo.setItem("FrontpanelDisplayGrayscale", fileExists("/dev/dbox/oled0"))
 	BoxInfo.setItem("DeepstandbySupport", model != "dm800")
 	BoxInfo.setItem("Fan", fileCheck("/proc/stb/fp/fan"))
@@ -167,6 +231,8 @@ def setBoxInfoItems():
 	BoxInfo.setItem("StandbyLED", fileCheck("/proc/stb/power/standbyled") or model in ("gbue4k", "gbquad4k") and fileCheck("/proc/stb/fp/led0_pattern"))
 	BoxInfo.setItem("SuspendLED", fileCheck("/proc/stb/power/suspendled") or fileCheck("/proc/stb/fp/enable_led"))
 	BoxInfo.setItem("Display", BoxInfo.getItem("FrontpanelDisplay") or BoxInfo.getItem("StandbyLED"))
+	BoxInfo.setItem("LEDControl", MODEL not in ("dreamone", "dreamtwo"))
+	BoxInfo.setItem("LEDColorControl", fileExists("/proc/stb/fp/led_color"))
 	BoxInfo.setItem("LedPowerColor", fileCheck("/proc/stb/fp/ledpowercolor"))
 	BoxInfo.setItem("LedStandbyColor", fileCheck("/proc/stb/fp/ledstandbycolor"))
 	BoxInfo.setItem("LedSuspendColor", fileCheck("/proc/stb/fp/ledsuspendledcolor"))
@@ -183,6 +249,12 @@ def setBoxInfoItems():
 	BoxInfo.setItem("VFD_scroll_delay", not model.startswith("et8500") and fileCheck("/proc/stb/lcd/scroll_delay"))
 	BoxInfo.setItem("VFD_initial_scroll_delay", not model.startswith("et8500") and fileCheck("/proc/stb/lcd/initial_scroll_delay"))
 	BoxInfo.setItem("VFD_final_scroll_delay", not model.startswith("et8500") and fileCheck("/proc/stb/lcd/final_scroll_delay"))
+	BoxInfo.setItem("LcdLiveTVMode", fileCheck("/proc/stb/lcd/mode"))
+	BoxInfo.setItem("LcdLiveDecoder", fileCheck("/proc/stb/lcd/live_decoder"))
+	BoxInfo.setItem("LCDMiniTV", fileExists("/proc/stb/lcd/mode"))
+	BoxInfo.setItem("ConfigDisplay", BoxInfo.getItem("FrontpanelDisplay"))
+	BoxInfo.setItem("DefaultDisplayBrightness", MACHINEBUILD in ("dm900", "dm920", "dreamone", "dreamtwo") and 8 or 5)
+	BoxInfo.setItem("hasTuners", getHasTuners() or isPluginInstalled("SatipClient"))
 	BoxInfo.setItem("LcdLiveTV", fileCheck("/proc/stb/fb/sd_detach") or fileCheck("/proc/stb/lcd/live_enable"))
 	BoxInfo.setItem("LcdLiveTVMode", fileCheck("/proc/stb/lcd/mode"))
 	BoxInfo.setItem("LcdLiveDecoder", fileCheck("/proc/stb/lcd/live_decoder"))
@@ -207,7 +279,15 @@ def setBoxInfoItems():
 	BoxInfo.setItem("HasColorimetry", fileCheck("/proc/stb/video/hdmi_colorimetry"))
 	BoxInfo.setItem("HasHdrType", fileCheck("/proc/stb/video/hdmi_hdrtype"))
 	BoxInfo.setItem("HasScaler_sharpness", pathExists("/proc/stb/vmpeg/0/pep_scaler_sharpness"))
-	BoxInfo.setItem("HasHDMIin", BoxInfo.getItem("dmifhdin") or BoxInfo.getItem("hdmihdin"))
+	BoxInfo.setItem("HDMICEC", fileExists("/dev/hdmi_cec") or fileExists("/dev/misc/hdmi_cec0"))
+	BoxInfo.setItem("HDMIin", BoxInfo.getItem("hdmifhdin") or BoxInfo.getItem("hdmihdin"))
+	BoxInfo.setItem("HDMIinPiP", BoxInfo.getItem("HDMIin"))
+	BoxInfo.setItem("HasHDMIin", BoxInfo.getItem("hdmifhdin") or BoxInfo.getItem("hdmihdin"))
+	BoxInfo.setItem("HasHDMIinFHD", MODEL in ("dm900", "dm920", "dreamone", "dreamtwo"))
+	BoxInfo.setItem("HasHDMIinPiP", BoxInfo.getItem("HasHDMIin") and BRAND != "dreambox")
+	BoxInfo.setItem("DreamBoxAudio", MODEL in ("dm7080", "dm800", "dm900", "dm920", "dreamone", "dreamtwo"))
+	BoxInfo.setItem("DreamBoxDVI", MODEL in ("dm8000", "dm800"))
+	BoxInfo.setItem("VFDSymbol", BoxInfo.getItem("vfdsymbol"))
 	BoxInfo.setItem("HasHDMI-CEC", BoxInfo.getItem("hdmi") and fileExists(resolveFilename(SCOPE_PLUGINS, "SystemPlugins/HdmiCEC/plugin.pyc")) and (fileExists("/dev/cec0") or fileExists("/dev/hdmi_cec") or fileExists("/dev/misc/hdmi_cec0")))
 	BoxInfo.setItem("HasYPbPr", model in ("dm8000", "et5000", "et6000", "et6500", "et9000", "et9200", "et9500", "et10000", "formuler1", "mbtwinplus", "spycat", "vusolo", "vuduo", "vuduo2", "vuultimo"))
 	BoxInfo.setItem("HasScart", model in ("dm8000", "et4000", "et6500", "et8000", "et9000", "et9200", "et9500", "et10000", "formuler1", "hd1100", "hd1200", "hd1265", "hd2400", "vusolo", "vusolo2", "vuduo", "vuduo2", "vuultimo", "vuuno", "xp1000"))
@@ -233,8 +313,12 @@ def setBoxInfoItems():
 	BoxInfo.setItem("Has3DSurroundSpeaker", fileExists("/proc/stb/audio/3dsurround_choices") and fileCheck("/proc/stb/audio/3dsurround"))
 	BoxInfo.setItem("Has3DSurroundSoftLimiter", fileExists("/proc/stb/audio/3dsurround_softlimiter_choices") and fileCheck("/proc/stb/audio/3dsurround_softlimiter"))
 	BoxInfo.setItem("CanDownmixAC3", fileHas("/proc/stb/audio/ac3_choices", "downmix"))
+	BoxInfo.setItem("CanDownmixAC3Plus", fileHas("/proc/stb/audio/ac3plus_choices", "downmix"))
 	BoxInfo.setItem("CanDownmixDTS", fileHas("/proc/stb/audio/dts_choices", "downmix"))
+	BoxInfo.setItem("CanDownmixDTSHD", fileHas("/proc/stb/audio/dtshd_choices", "downmix"))
 	BoxInfo.setItem("CanDownmixAAC", fileHas("/proc/stb/audio/aac_choices", "downmix"))
+	BoxInfo.setItem("CanDownmixAACPlus", fileHas("/proc/stb/audio/aacplus_choices", "downmix"))
+	BoxInfo.setItem("CanAC3plusTranscode", fileExists("/proc/stb/audio/ac3plus_choices"))
 	BoxInfo.setItem("HDMIAudioSource", fileCheck("/proc/stb/hdmi/audio_source"))
 	BoxInfo.setItem("CanAC3Transcode", fileHas("/proc/stb/audio/ac3plus_choices", "force_ac3"))
 	BoxInfo.setItem("CanDTSHD", fileHas("/proc/stb/audio/dtshd_choices", "downmix"))
@@ -243,6 +327,8 @@ def setBoxInfoItems():
 	BoxInfo.setItem("CanWMAPRO", fileHas("/proc/stb/audio/wmapro_choices", "downmix"))
 	BoxInfo.setItem("CanBTAudio", fileHas("/proc/stb/audio/btaudio_choices", "off"))
 	BoxInfo.setItem("CanBTAudioDelay", fileCheck("/proc/stb/audio/btaudio_delay") or fileCheck("/proc/stb/audio/btaudio_delay_pcm"))
+	BoxInfo.setItem("CanSyncMode", fileExists("/proc/stb/video/sync_mode_choices"))
+	BoxInfo.setItem("CanChangeOsdAlpha", access("/proc/stb/video/alpha", R_OK) and True or False)
 	BoxInfo.setItem("BootDevice", getBootdevice())
 	BoxInfo.setItem("NimExceptionVuSolo2", model == "vusolo2")
 	BoxInfo.setItem("NimExceptionVuDuo2", model == "vuduo2")
@@ -255,6 +341,8 @@ def setBoxInfoItems():
 	BoxInfo.setItem("HasHiSi", pathExists("/proc/hisi"))
 	BoxInfo.setItem("FCCactive", False)
 	BoxInfo.setItem("Autoresolution_proc_videomode", model in ("gbue4k", "gbquad4k") and "/proc/stb/video/videomode_50hz" or "/proc/stb/video/videomode")
+	BoxInfo.setItem("ArchIsARM64", BoxInfo.getItem("architecture") == "aarch64" or "64" in BoxInfo.getItem("architecture"))
+	BoxInfo.setItem("ArchIsARM", BoxInfo.getItem("architecture").startswith(("arm", "cortex")))
 
 
 setBoxInfoItems()
