@@ -254,7 +254,6 @@ def setBoxInfoItems():
 	BoxInfo.setItem("LCDMiniTV", fileExists("/proc/stb/lcd/mode"))
 	BoxInfo.setItem("ConfigDisplay", BoxInfo.getItem("FrontpanelDisplay"))
 	BoxInfo.setItem("DefaultDisplayBrightness", MACHINEBUILD in ("dm900", "dm920", "dreamone", "dreamtwo") and 8 or 5)
-	BoxInfo.setItem("hasTuners", getHasTuners() or isPluginInstalled("SatipClient"))
 	BoxInfo.setItem("LcdLiveTV", fileCheck("/proc/stb/fb/sd_detach") or fileCheck("/proc/stb/lcd/live_enable"))
 	BoxInfo.setItem("LcdLiveTVMode", fileCheck("/proc/stb/lcd/mode"))
 	BoxInfo.setItem("LcdLiveDecoder", fileCheck("/proc/stb/lcd/live_decoder"))
