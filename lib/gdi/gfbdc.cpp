@@ -21,6 +21,7 @@ int pal_addr, int flags);
 gFBDC::gFBDC()
 {
 	fb=new fbClass;
+
 #ifndef CONFIG_ION
 	if (!fb->Available())
 		eFatal("[gFBDC] no framebuffer available");
