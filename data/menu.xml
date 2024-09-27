@@ -52,7 +52,7 @@
 					<item key="primary_skin_selector" level="0" text="GUI Skin"><screen module="SkinSelector" screen="SkinSelector"/></item>
 					<item key="display_skin_selector" level="0" requires="FrontpanelDisplay" text="Display Skin"><screen module="SkinSelector" screen="LcdSkinSelector"/></item>
 					<item key="display_skin_selector" level="0" text="Skin Setup" weight="5" requires="Display"><screen module="SkinSelector" screen="LcdSkinSelector" /></item>
-					<item key="lcd_setup" level="1" text="LCD Setup" weight="10" requires="Display"><setup id="FrontDisplay" /></item>
+					<item key="lcd_setup" text="Display setup" requires="Display"><setup level="1" id="lcd"/></item>
 					<item key="led_setup" level="1" text="LED Setup" weight="15"><setup id="LedDisplay" /></item>
 				</menu>
 				<menu key="epg" level="0" text="EPG">
@@ -69,7 +69,6 @@
 					</menu>
 					<item key="network_setup" level="0" text="Network"><screen module="NetworkSetup" screen="NetworkAdapterSelection"/></item>
 					<item key="input_device_setup" level="1" text="Input devices"><screen module="InputDeviceSetup" screen="InputDeviceSelection"/></item>
-					<item key="lcd_setup" text="Display setup" requires="Display"><setup level="1" id="lcd"/></item>
 					<item key="keyboard_setup" text="Keyboard"><setup id="keyboard"/></item>
 					<item key="RecordPaths" level="2" text="Recording paths"><screen module="RecordPaths" screen="RecordPathsSettings"/></item>
 					<item key="hotkey_setup" level="1" text="Hotkey"><screen module="Hotkey" screen="HotkeySetup"/></item>
