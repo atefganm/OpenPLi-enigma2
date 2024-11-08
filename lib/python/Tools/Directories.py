@@ -9,7 +9,7 @@ from re import compile
 from stat import S_IMODE
 from sys import _getframe as getframe
 from unicodedata import normalize
-
+from traceback import print_exc
 from xml.etree.ElementTree import Element, ParseError, fromstring, parse
 
 
