@@ -62,8 +62,8 @@ class fontRenderClass
 
 	int getFaceProperties(const std::string &face, FTC_FaceID &id, int &renderflags);
 
-    FT_Error getGlyphBitmap(FTC_Image_Desc *font, GlyphIndex glyph_index, FTC_SBit *sbit);
-    FT_Error getGlyphImage(FTC_Image_Desc *font, GlyphIndex glyph_index, FT_Glyph *glyph, FT_Glyph *borderglyph, int bordersize);
+	FT_Error getGlyphBitmap(FTC_Image_Desc *font, GlyphIndex glyph_index, FTC_SBit *sbit);
+	FT_Error getGlyphImage(FTC_Image_Desc *font, GlyphIndex glyph_index, FT_Glyph *glyph, FT_Glyph *borderglyph, int bordersize);
 
 	static fontRenderClass *instance;
 #else

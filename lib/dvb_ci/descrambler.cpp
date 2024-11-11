@@ -150,7 +150,7 @@ int descrambler_set_pid(int desc_fd, eDVBCISlot *slot, int enable, int pid)
 	p.pid = pid;
 	p.index = flags;
 
-	if (ioctl(desc_fd, CA_SET_PID, &p) == -1) 
+	if (ioctl(desc_fd, CA_SET_PID, &p) == -1)
 	{
 		if (slot->getIsCA0Excluded())
 			return 0;

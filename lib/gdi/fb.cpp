@@ -273,12 +273,12 @@ int fbClass::SetMode(int nxRes, int nyRes, int nbpp)
 		eDebug("[fb] FBIOGET_FSCREENINFO: %m");
 	}
 	stride=fix.line_length;
-#ifdef CONFIG_ION	
+#ifdef CONFIG_ION
 	m_phys_mem = fix.smem_start;
 	available = fix.smem_len;
 	/* map new framebuffer */
 	lfb=(unsigned char*)mmap(0, stride * screeninfo.yres_virtual, PROT_WRITE|PROT_READ, MAP_SHARED, fbFd, 0);
-#endif	
+#endif
 	memset(lfb, 0, stride*yRes);
 	blit();
 	return 0;
