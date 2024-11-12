@@ -422,17 +422,6 @@ AX_CXX_COMPILE_STDCXX_17([ext],[mandatory])
 AX_CHECK_COMPILE_FLAG([-Wattribute-alias], [CXXFLAGS="$CXXFLAGS -Wattribute-alias"])
 AX_CHECK_COMPILE_FLAG([-Wattribute-alias=1], [CXXFLAGS="$CXXFLAGS -Wattribute-alias=1"])
 
-if test "$PYTHON_VERSION"; then
-    case $PYTHON_VERSION in
-	2.*)
-	  PY_VERSION_CFLAGS="-Werror -Wno-error=cast-align=strict -Wno-error=cast-function-type -Wno-error=cast-function-type -Wno-error=stringop-truncation"
-	;;
-	3.*)
-	  PY_VERSION_CFLAGS="-Wno-error=unsafe-loop-optimizations"
-	;;
-    esac
-fi
-
 CPPFLAGS="$CPPFLAGS $PYTHON_CPPFLAGS"
 CFLAGS="$CFLAGS -Wall"
 CXXFLAGS="$CXXFLAGS -Wall -Wextra \
