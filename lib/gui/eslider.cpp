@@ -117,7 +117,7 @@ int eSlider::event(int event, void *data, void *data2)
 		{
 			if(m_have_background_color) {
 				painter.setBackgroundColor(m_background_color);
-			} 
+			}
 			painter.setRadius(cornerRadius, getCornerRadiusEdges());
 
 			if (drawborder)
@@ -130,7 +130,7 @@ int eSlider::event(int event, void *data, void *data2)
 					painter.setBackgroundColor(color);
 				}
 				painter.drawRectangle(eRect(ePoint(0, 0), size()));
- 				painter.setBackgroundColor((m_have_background_color) ? m_background_color : gRGB(0, 0, 0));
+				painter.setBackgroundColor((m_have_background_color) ? m_background_color : gRGB(0, 0, 0));
 				painter.setRadius(cornerRadius, getCornerRadiusEdges());
 				painter.drawRectangle(eRect(m_border_width, m_border_width, size().width() - m_border_width * 2, size().height() - m_border_width * 2));
 				drawborder = false;
@@ -158,11 +158,11 @@ int eSlider::event(int event, void *data, void *data2)
 			}
 			else {
 				if (m_have_sliderforeground_color)
-				    painter.setForegroundColor(m_sliderforeground_color);
-			    else if (m_have_foreground_color)
+					painter.setForegroundColor(m_sliderforeground_color);
+				else if (m_have_foreground_color)
 					painter.setForegroundColor(m_foreground_color);
 
-                painter.fill(m_currently_filled);
+				painter.fill(m_currently_filled);
 			}
 		}
 		else {
@@ -171,22 +171,22 @@ int eSlider::event(int event, void *data, void *data2)
 				painter.setRadius(cornerRadius, getCornerRadiusEdges());
 			painter.blit(m_pixmap, ePoint(0, 0), m_currently_filled.extends, isTransparent() ? gPainter::BT_ALPHABLEND : 0);
 		}
-        // border
-        if(drawborder) {
-		    if (m_have_sliderborder_color)
-			    painter.setForegroundColor(m_sliderborder_color);
-		    else if (m_have_border_color)
-			    painter.setForegroundColor(m_border_color);
+		// border
+		if(drawborder) {
+			if (m_have_sliderborder_color)
+				painter.setForegroundColor(m_sliderborder_color);
+			else if (m_have_border_color)
+				painter.setForegroundColor(m_border_color);
 
-		    int border_width;
-		    if(m_have_sliderborder_width)
-			    border_width = m_sliderborder_width;
-		    else
-			    border_width = m_border_width;
-		    painter.fill(eRect(0, 0, s.width(), border_width));
-		    painter.fill(eRect(0, border_width, border_width, s.height() - border_width));
-		    painter.fill(eRect(border_width, s.height() - border_width, s.width() - border_width, border_width));
-            painter.fill(eRect(s.width() - border_width, border_width, border_width, s.height() - border_width));
+			int border_width;
+			if(m_have_sliderborder_width)
+				border_width = m_sliderborder_width;
+			else
+				border_width = m_border_width;
+			painter.fill(eRect(0, 0, s.width(), border_width));
+			painter.fill(eRect(0, border_width, border_width, s.height() - border_width));
+			painter.fill(eRect(border_width, s.height() - border_width, s.width() - border_width, border_width));
+			painter.fill(eRect(s.width() - border_width, border_width, border_width, s.height() - border_width));
 		}
 
 		return 0;
