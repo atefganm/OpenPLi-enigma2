@@ -432,7 +432,6 @@ CXXFLAGS="$CXXFLAGS -Wall -Wextra \
 	-Wstringop-overflow=3 -Woverlength-strings \
 	-Wunsafe-loop-optimizations -Wpointer-arith \
 	-Wfloat-equal -Wlogical-op \
-	$PY_VERSION_CFLAGS \
 	-Wno-error=ignored-qualifiers \
 	-Wno-error=shadow -Wno-error=cast-qual \
 	-Wno-error=aggregate-return -Wno-error=missing-field-initializers \
