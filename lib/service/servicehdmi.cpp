@@ -5,6 +5,7 @@
 #include <lib/base/modelinformation.h>
 #include <lib/base/nconfig.h>
 #include <lib/base/object.h>
+#include <lib/driver/avswitch.h>
 #include <lib/dvb/decoder.h>
 #include <lib/dvb/encoder.h>
 #include <lib/service/servicehdmi.h>
@@ -255,7 +256,7 @@ RESULT eServiceHDMIRecord::start(bool simulate)
 RESULT eServiceHDMIRecord::stop()
 {
 	if (!m_simulate)
-		eDebug("[eServiceHDMIRecord] stop recording!");
+		eDebug("[eServiceHDMIRecord][stop] stop recording!");
 	if (m_state == stateRecording)
 	{
 		if (m_thread)
@@ -271,12 +272,11 @@ RESULT eServiceHDMIRecord::stop()
 
 		m_state = statePrepared;
 	} else if (!m_simulate)
-		eDebug("[eServiceHDMIRecord] (was not recording)");
+		eDebug("[eServiceHDMIRecord][stop] (was not recording)");
 	if (m_state == statePrepared)
 	{
 		m_thread = NULL;
-		if (!m_simulate && eEncoder::getInstance())
-			eEncoder::getInstance()->freeEncoder(m_encoder_fd);
+		if (eEncoder::getInstance()) eEncoder::getInstance()->freeEncoder(m_encoder_fd);
 		m_encoder_fd = -1;
 		m_state = stateIdle;
 	}
@@ -286,12 +286,19 @@ RESULT eServiceHDMIRecord::stop()
 
 int eServiceHDMIRecord::doPrepare()
 {
-	if (!m_simulate && m_encoder_fd < 0)
+	eDebug("[eServiceHDMIRecord][doPrepare] Record to %s , encoder_fd is %d", m_filename.c_str(), m_encoder_fd);
+	if (m_encoder_fd < 0)
 	{
 		if (eEncoder::getInstance())
+		{
 			m_encoder_fd = eEncoder::getInstance()->allocateHDMIEncoder(m_ref.toString(), m_buffersize);
+		}
+		eDebug("[eServiceHDMIRecord][doPrepare] Hdmi encoder %s , encoder_fd is %d", m_filename.c_str(), m_encoder_fd);
 		if (m_encoder_fd < 0)
+		{
+			eDebug("[eServiceHDMIRecord][doPrepare] Hdmi encoder %s , encoder_fd is %d", m_filename.c_str(), m_encoder_fd);		
 			return -1;
+		}
 	}
 	m_state = statePrepared;
 	return 0;
@@ -299,6 +306,7 @@ int eServiceHDMIRecord::doPrepare()
 
 int eServiceHDMIRecord::doRecord()
 {
+	eDebug("[eServiceHDMIRecord][doRecord] entered Recording to %s...", m_filename.c_str());
 	int err = doPrepare();
 	if (err)
 	{
@@ -309,12 +317,12 @@ int eServiceHDMIRecord::doRecord()
 
 	if (!m_thread && !m_simulate)
 	{
-		eDebug("[eServiceHDMIRecord] Recording to %s...", m_filename.c_str());
+		eDebug("[eServiceHDMIRecord][doRecord] Recording to %s...", m_filename.c_str());
 		::remove(m_filename.c_str());
 		int fd = ::open(m_filename.c_str(), O_WRONLY | O_CREAT | O_LARGEFILE | O_CLOEXEC, 0666);
 		if (fd < 0)
 		{
-			eDebug("[eServiceHDMIRecord] can't open recording file: %m");
+			eDebug("[eServiceHDMIRecord][doRecord] can't open recording file: %m");
 			m_error = errOpenRecordFile;
 			m_event((iRecordableService*)this, evRecordFailed);
 			return errOpenRecordFile;
