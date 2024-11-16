@@ -75,6 +75,8 @@ class About(Screen):
 
 		AboutText += _("Python version: ") + about.getPythonVersionString() + "\n"
 
+		AboutText += _("OpenSSL version: ") + about.getOpenSSLVersion() + "\n"
+
 		AboutText += _("Enigma (re)starts: %d\n") % config.misc.startCounter.value
 		AboutText += _("Uptime: %s\n") % about.getBoxUptime()
 		AboutText += _("Enigma debug level: %d\n") % eGetEnigmaDebugLvl()
