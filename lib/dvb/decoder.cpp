@@ -323,6 +323,7 @@ if (zapmodeDM == "hold")
 		::ioctl(m_fd, VIDEO_SELECT_SOURCE, demux ? VIDEO_SOURCE_DEMUX : VIDEO_SOURCE_HDMI);
 	}
 }
+
 	if (m_close_invalidates_attributes < 0)
 	{
 		/*
