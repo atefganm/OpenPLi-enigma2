@@ -16,7 +16,7 @@ from Components.MenuList import MenuList
 from Components.ServiceEventTracker import ServiceEventTracker, InfoBarBase
 profile("ChannelSelection.py 1")
 from Screens.EpgSelection import EPGSelection
-from enigma import eServiceReference, eEPGCache, eServiceCenter, eRCInput, eTimer, eDVBDB, iPlayableService, iServiceInformation, getPrevAsciiCode
+from enigma import eServiceReference, eEPGCache, eServiceCenter, eRCInput, eTimer, eDVBDB, iPlayableService, iServiceInformation, getPrevAsciiCode, loadPNG
 from Components.config import config, configfile, ConfigSubsection, ConfigText, ConfigYesNo, ConfigSelection, ConfigText
 from Tools.NumericalTextInput import NumericalTextInput
 profile("ChannelSelection.py 2")
@@ -43,14 +43,18 @@ from Screens.RdsDisplay import RassInteractive
 from ServiceReference import ServiceReference
 from Tools.BoundFunction import boundFunction
 from Tools.Notifications import RemovePopup
-from Tools.Alternatives import GetWithAlternative
+from Tools.Alternatives import GetWithAlternative, CompareWithAlternatives
 from Tools.Directories import fileExists, resolveFilename, sanitizeFilename, SCOPE_PLUGINS
 from Plugins.Plugin import PluginDescriptor
 from Components.PluginComponent import plugins
 from Screens.ChoiceBox import ChoiceBox
 from Screens.EventView import EventViewEPGSelect
+from Screens.HelpMenu import HelpableScreen
 import os
-from time import time
+from time import time, localtime, strftime
+from Components.Sources.List import List
+from Components.Sources.StaticText import StaticText
+from Components.Renderer.Picon import getPiconName
 profile("ChannelSelection.py after imports")
 
 FLAG_SERVICE_NEW_FOUND = 64
@@ -2054,6 +2058,7 @@ class ChannelSelection(ChannelSelectionBase, ChannelSelectionEdit, ChannelSelect
 
 		self.history = []
 		self.history_pos = 0
+		self.delhistpoint = None
 
 		if config.servicelist.startupservice.value and config.servicelist.startuproot.value:
 			config.servicelist.lastmode.value = config.servicelist.startupmode.value
@@ -2312,15 +2317,25 @@ class ChannelSelection(ChannelSelectionBase, ChannelSelectionEdit, ChannelSelect
 		return ret
 
 	def addToHistory(self, ref):
+		if self.delhistpoint is not None:
+			x = self.delhistpoint
+			while x <= len(self.history)-1:
+				del self.history[x]
+		self.delhistpoint = None
+
 		if self.servicePath is not None:
 			tmp = self.servicePath[:]
 			tmp.append(ref)
-			try:
-				del self.history[self.history_pos + 1:]
-			except:
-				pass
 			self.history.append(tmp)
 			hlen = len(self.history)
+			x = 0
+			while x < hlen - 1:
+				if self.history[x][-1] == ref:
+					del self.history[x]
+					hlen -= 1
+				else:
+					x += 1
+
 			if hlen > HISTORYSIZE:
 				del self.history[0]
 				hlen -= 1
@@ -2335,8 +2350,10 @@ class ChannelSelection(ChannelSelectionBase, ChannelSelectionEdit, ChannelSelect
 		if hlen > 1 and self.history_pos > 0:
 			self.history_pos -= 1
 			self.setHistoryPath()
+		self.delhistpoint = self.history_pos+1
 
 	def historyNext(self):
+		self.delhistpoint = None
 		hlen = len(self.history)
 		if hlen > 1 and self.history_pos < (hlen - 1):
 			self.history_pos += 1
@@ -2359,6 +2376,41 @@ class ChannelSelection(ChannelSelectionBase, ChannelSelectionEdit, ChannelSelect
 		else:
 			self.setCurrentSelection(ref)
 		self.saveChannel(ref)
+
+	def historyClear(self):
+		if self and self.servicelist:
+			for i in range(0, len(self.history)-1):
+				del self.history[0]
+			self.history_pos = len(self.history)-1
+			return True
+		return False
+
+	def historyZap(self, direction):
+		count = len(self.history)
+		if count > 0:
+			selectedItem = self.history_pos + direction
+			if selectedItem < 0:
+				selectedItem = 0
+			elif selectedItem > count - 1:
+				selectedItem = count - 1
+			self.session.openWithCallback(self.historyMenuClosed, HistoryZapSelector, [x[-1] for x in self.history], markedItem=self.history_pos, selectedItem=selectedItem)
+
+	def historyMenuClosed(self, retval):
+		if not retval:
+			return
+		hlen = len(self.history)
+		pos = 0
+		for x in self.history:
+			if x[-1] == retval:
+				break
+			pos += 1
+		self.delhistpoint = pos + 1
+		if pos < hlen and pos != self.history_pos:
+			tmp = self.history[pos]
+			# self.history.append(tmp)
+			# del self.history[pos]
+			self.history_pos = pos
+			self.setHistoryPath()
 
 	def saveRoot(self):
 		path = ''
@@ -2778,3 +2830,82 @@ class SimpleChannelSelection(ChannelSelectionBase, SelectionEventInfo):
 
 	def getMutableList(self, root=None):
 		return None
+
+
+class HistoryZapSelector(Screen, HelpableScreen):
+	# HISTORY_SPACER = 0
+	# HISTORY_MARKER = 1
+	# HISTORY_SERVICE_NAME = 2
+	# HISTORY_EVENT_NAME = 3
+	# HISTORY_EVENT_DESCRIPTION = 4
+	# HISTORY_EVENT_DURATION = 5
+	# HISTORY_SERVICE_PICON = 6
+	HISTORY_SERVICE_REFERENCE = 7
+
+	def __init__(self, session, serviceReferences, markedItem=0, selectedItem=0):
+		Screen.__init__(self, session)
+		HelpableScreen.__init__(self)
+		self.setTitle(_("History Zap"))
+		serviceHandler = eServiceCenter.getInstance()
+		historyList = []
+		for index, serviceReference in enumerate(serviceReferences):
+			info = serviceHandler.info(serviceReference)
+			if info:
+				serviceName = info.getName(serviceReference) or ""
+				eventName = ""
+				eventDescription = ""
+				eventDuration = ""
+				event = info.getEvent(serviceReference)
+				if event:
+					eventName = event.getEventName() or ""
+					eventDescription = event.getShortDescription()
+					if not eventDescription:
+						eventDescription = event.getExtendedDescription() or ""
+					begin = event.getBeginTime()
+					if begin:
+						end = begin + event.getDuration()
+						remaining = (end - int(time())) // 60
+						prefix = "+" if remaining > 0 else ""
+						localBegin = localtime(begin)
+						localEnd = localtime(end)
+						eventDuration = f"{strftime(config.usage.time.short.value, localBegin)}  -  {strftime(config.usage.time.short.value, localEnd)}    ({prefix}{ngettext('%d Min', '%d Mins', remaining) % remaining})"
+				servicePicon = getPiconName(str(ServiceReference(serviceReference)))
+				servicePicon = loadPNG(servicePicon) if servicePicon else ""
+				historyList.append(("", index == markedItem and "\u00BB" or "", serviceName, eventName, eventDescription, eventDuration, servicePicon, serviceReference))
+		if config.usage.zapHistorySort.value == 0:
+			historyList.reverse()
+			self.selectedItem = len(historyList) - selectedItem - 1
+		else:
+			self.selectedItem = selectedItem
+		self["menu"] = List(historyList)
+		self["key_red"] = StaticText(_("Cancel"))
+		self["key_green"] = StaticText(_("Select"))
+		self["actions"] = HelpableActionMap(self, ["SelectCancelActions"], {
+			"select": (self.keySelect, _("Select the currently highlighted service")),
+			"cancel": (self.keyCancel, _("Cancel the service history zap"))
+		}, prio=0, description=_("History Zap Actions"))
+		previousNext = ("previous", "next") if config.usage.zapHistorySort.value else ("next", "previous")
+		self["navigationActions"] = HelpableActionMap(self, ["NavigationActions", "PreviousNextActions"], {
+			"left": (self["menu"].goTop, _("Move to the last line / screen")),
+			"top": (self["menu"].goTop, _("Move to the first line / screen")),
+			"pageUp": (self["menu"].goPageUp, _("Move up a screen")),
+			"up": (self["menu"].goLineUp, _("Move up a line")),
+			previousNext[0]: (self["menu"].goLineUp, _("Move up a line")),
+			previousNext[1]: (self["menu"].goLineDown, _("Move down a line")),
+			"down": (self["menu"].goLineDown, _("Move down a line")),
+			"pageDown": (self["menu"].goPageDown, _("Move down a screen")),
+			"bottom": (self["menu"].goBottom, _("Move to the last line / screen")),
+			"right": (self["menu"].goBottom, _("Move to the first line / screen"))
+		}, prio=0, description=_("History Zap Navigation Actions"))
+		self.onLayoutFinish.append(self.layoutFinished)
+
+	def layoutFinished(self):
+		self["menu"].enableAutoNavigation(False)
+		self["menu"].setIndex(self.selectedItem)
+
+	def keyCancel(self):
+		self.close(None)  # Send None to tell the calling code that the selection was canceled.
+
+	def keySelect(self):
+		current = self["menu"].getCurrent()
+		self.close(current and current[self.HISTORY_SERVICE_REFERENCE])  # Send the selected ServiceReference to the calling code.
