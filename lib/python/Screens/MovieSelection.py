@@ -42,6 +42,7 @@ from skin import findSkinScreen
 import pickle
 
 config.movielist = ConfigSubsection()
+config.movielist.use_fuzzy_dates = ConfigYesNo(default=True)
 config.movielist.moviesort = ConfigInteger(default=MovieList.SORT_GROUPWISE)
 config.movielist.listtype = ConfigInteger(default=MovieList.LISTTYPE_MINIMAL)
 config.movielist.description = ConfigInteger(default=MovieList.SHOW_DESCRIPTION)
@@ -279,6 +280,7 @@ class MovieBrowserConfiguration(Setup):
 
 	def createSetup(self):
 		configList = [
+			(_("Use adaptive date display"), config.movielist.use_fuzzy_dates, _("Adaptive date display allows recent dates to be displayed as 'Today' or 'Yesterday'.  It hides the year for recordings made this year.  It hides the day of the week for recordings made in previous years.")),
 			(_("Sort"), self.cfg.moviesort, _("You can set sorting type for items in movielist.")),
 			(_("Show extended description"), self.cfg.description, _("You can enable if will be displayed extended EPG description for item.")),
 			(_("Type"), self.cfg.listtype, _("Set movielist type.")),

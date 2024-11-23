@@ -50,10 +50,11 @@
 					<item key="timezone_setup" level="0" text="Timezone"><setup id="timezone"/></item>
 					<item key="user_interface" level="0" text="User interface"><setup id="userinterface"/></item>
 					<item key="primary_skin_selector" level="0" text="GUI Skin"><screen module="SkinSelector" screen="SkinSelector"/></item>
-					<item key="display_skin_selector" level="0" requires="FrontpanelDisplay" text="Display Skin"><screen module="SkinSelector" screen="LcdSkinSelector"/></item>
-					<item key="display_skin_selector" level="0" text="Skin Setup" weight="5" requires="Display"><screen module="SkinSelector" screen="LcdSkinSelector" /></item>
-					<item key="lcd_setup" text="Display setup" requires="Display"><setup level="1" id="lcd"/></item>
-					<item key="led_setup" level="1" text="LED Setup" weight="15"><setup id="LedDisplay" /></item>
+					<menu key="lcd" level="0" text="Front Panel Display">
+						<item key="display_skin_selector" level="0" text="Skin Setup" weight="5" requires="Display"><screen module="SkinSelector" screen="LcdSkinSelector" /></item>
+						<item key="lcd_setup" level="1" text="LCD Setup" weight="10" requires="Display"><setup id="FrontDisplay" /></item>
+						<item key="led_setup" level="1" text="LED Setup" weight="15"><setup id="LedDisplay" /></item>
+					</menu>
 				</menu>
 				<menu key="epg" level="0" text="EPG">
 					<item key="epg_setup" level="0" text="EPG settings"><setup id="epgsettings"/></item>
