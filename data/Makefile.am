@@ -18,6 +18,7 @@ dist_pkgdata_DATA = \
 	setup.xml \
 	skin_subtitles.xml \
 	startwizard.xml \
+	timezone.xml \
 	unicable.xml
 
 iso-639-3.pck: $(srcdir)/iso-639-3.tab
