@@ -1,5 +1,5 @@
 from Screens.Setup import Setup
-from Components.config import config, ConfigClock, ConfigDateTime, getConfigListEntry
+from Components.config import ConfigClock, ConfigDateTime
 import time
 import datetime
 
@@ -19,7 +19,7 @@ class TimeDateInput(Setup):
 		if conf_date:
 			self.save_mask |= 2
 		else:
-			conf_date = ConfigDateTime(default=time.time(), formatstring=config.usage.date.full.value, increment=86400)
+			conf_date = ConfigDateTime(default=time.time(), formatstring=_("%d.%B %Y"), increment=86400)
 		self.timeinput_date = conf_date
 		self.timeinput_time = conf_time
 

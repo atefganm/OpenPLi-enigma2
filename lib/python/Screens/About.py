@@ -19,8 +19,6 @@ from enigma import eTimer, eLabel, eConsoleAppContainer, getDesktop, eGetEnigmaD
 from Components.GUIComponent import GUIComponent
 from skin import applySkinFactor, parameters, parseScale
 
-from time import strftime
-
 import os
 import glob
 
@@ -76,8 +74,6 @@ class About(Screen):
 		AboutText += player + "\n"
 
 		AboutText += _("Python version: ") + about.getPythonVersionString() + "\n"
-
-		AboutText += _("OpenSSL version: ") + about.getOpenSSLVersion() + "\n"
 
 		AboutText += _("Enigma (re)starts: %d\n") % config.misc.startCounter.value
 		AboutText += _("Uptime: %s\n") % about.getBoxUptime()

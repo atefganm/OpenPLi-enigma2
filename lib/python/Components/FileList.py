@@ -1,89 +1,86 @@
-from os import listdir
-from os.path import basename, dirname, isdir, join as pathjoin, normpath, realpath, exists
-from re import compile
-
-from enigma import BT_SCALE, BT_VALIGN_CENTER, RT_HALIGN_LEFT, RT_VALIGN_CENTER, eListboxPythonMultiContent, eServiceCenter, eServiceReference, gFont
-
-from skin import fonts, parameters
-from Components.Harddisk import harddiskmanager
+import os
+import re
 from Components.MenuList import MenuList
-from Tools.Directories import SCOPE_GUISKIN, resolveFilename
+from Components.Harddisk import harddiskmanager
+from Tools.Directories import SCOPE_CURRENT_SKIN, resolveFilename, fileExists
+from enigma import RT_HALIGN_LEFT, eListboxPythonMultiContent, eServiceReference, eServiceCenter, gFont
 from Tools.LoadPixmap import LoadPixmap
+from skin import applySkinFactor, fonts, parameters
 
 
 EXTENSIONS = {
-	"dts": "music",
-	"mp3": "music",
-	"wav": "music",
-	"wave": "music",
-	"wv": "music",
-	"oga": "music",
-	"ogg": "music",
-	"flac": "music",
-	"m4a": "music",
-	"mp2": "music",
-	"m2a": "music",
-	"wma": "music",
-	"ac3": "music",
-	"mka": "music",
-	"aac": "music",
-	"ape": "music",
-	"alac": "music",
-	"amr": "music",
-	"au": "music",
-	"mid": "music",
-	"jpg": "picture",
-	"png": "picture",
-	"gif": "picture",
-	"bmp": "picture",
-	"jpeg": "picture",
-	"jpe": "picture",
-	"svg": "picture",
-	"mpg": "movie",
-	"vob": "movie",
-	"m4v": "movie",
-	"mkv": "movie",
-	"avi": "movie",
-	"divx": "movie",
-	"dat": "movie",
-	"flv": "movie",
-	"mp4": "movie",
-	"mov": "movie",
-	"wmv": "movie",
-	"asf": "movie",
-	"3gp": "movie",
-	"3g2": "movie",
-	"mpeg": "movie",
-	"mpe": "movie",
-	"rm": "movie",
-	"rmvb": "movie",
-	"ogm": "movie",
-	"ogv": "movie",
-	"m2ts": "movie",
-	"mts": "movie",
-	"ts": "movie",
-	"webm": "movie",
-	"pva": "movie",
-	"wtv": "movie"
-}
+		"dts": "music",
+		"mp3": "music",
+		"wav": "music",
+		"wave": "music",
+		"wv": "music",
+		"oga": "music",
+		"ogg": "music",
+		"flac": "music",
+		"m4a": "music",
+		"mp2": "music",
+		"m2a": "music",
+		"wma": "music",
+		"ac3": "music",
+		"mka": "music",
+		"aac": "music",
+		"ape": "music",
+		"alac": "music",
+		"amr": "music",
+		"au": "music",
+		"mid": "music",
+		"jpg": "picture",
+		"png": "picture",
+		"gif": "picture",
+		"bmp": "picture",
+		"jpeg": "picture",
+		"jpe": "picture",
+		"mpg": "movie",
+		"vob": "movie",
+		"m4v": "movie",
+		"mkv": "movie",
+		"avi": "movie",
+		"divx": "movie",
+		"dat": "movie",
+		"flv": "movie",
+		"mp4": "movie",
+		"mov": "movie",
+		"wmv": "movie",
+		"asf": "movie",
+		"3gp": "movie",
+		"3g2": "movie",
+		"mpeg": "movie",
+		"mpe": "movie",
+		"rm": "movie",
+		"rmvb": "movie",
+		"ogm": "movie",
+		"ogv": "movie",
+		"m2ts": "movie",
+		"mts": "movie",
+		"ts": "movie",
+		"webm": "movie",
+		"pva": "movie",
+		"wtv": "movie",
+	}
 
 
 def FileEntryComponent(name, absolute=None, isDir=False):
 	res = [(absolute, isDir)]
-	x, y, w, h = parameters.get("FileListName", (35, 0, 600, 20))
-	res.append((eListboxPythonMultiContent.TYPE_TEXT, x, y, w, h, 0, RT_HALIGN_LEFT | RT_VALIGN_CENTER, name))
+	x, y, w, h = parameters.get("FileListName", applySkinFactor(35, 1, 600, 22))
+	res.append((eListboxPythonMultiContent.TYPE_TEXT, x, y, w, h, 0, RT_HALIGN_LEFT, name))
 	if isDir:
-		png = LoadPixmap(cached=True, path=resolveFilename(SCOPE_GUISKIN, "extensions/directory.png"))
+		png = LoadPixmap(cached=True, path=resolveFilename(SCOPE_CURRENT_SKIN, "extensions/directory.png"))
 	else:
-		extension = name.split(".")
+		extension = name.split('.')
 		extension = extension[-1].lower()
 		if extension in EXTENSIONS:
-			png = LoadPixmap(cached=True, path=resolveFilename(SCOPE_GUISKIN, "extensions/%s.png" % EXTENSIONS[extension]))
+			png = LoadPixmap(resolveFilename(SCOPE_CURRENT_SKIN, "extensions/" + EXTENSIONS[extension] + ".png"))
 		else:
 			png = None
 	if png is not None:
-		x, y, w, h = parameters.get("FileListIcon", (10, 0, 20, 20))
-		res.append((eListboxPythonMultiContent.TYPE_PIXMAP_ALPHABLEND, x, y, w, h, png, None, None, BT_SCALE | BT_VALIGN_CENTER))
+		x, y, w, h = parameters.get("FileListIcon", applySkinFactor(10, 2, 20, 20))
+		res.append((eListboxPythonMultiContent.TYPE_PIXMAP_ALPHABLEND, x, y, w, h, png))
+
 	return res
 
 
@@ -104,7 +101,7 @@ class FileList(MenuList):
 			self.topDirectory = "/"
 		# example: matching .nfi and .ts files: "^.*\.(nfi|ts)"
 		if matchingPattern:
-			self.matchingPattern = compile(matchingPattern)
+			self.matchingPattern = re.compile(matchingPattern)
 		else:
 			self.matchingPattern = None
 		self.inhibitDirs = inhibitDirs or []
@@ -118,29 +115,29 @@ class FileList(MenuList):
 		self.serviceHandler = eServiceCenter.getInstance()
 
 	def refreshMountpoints(self):
-		self.mountpoints = [pathjoin(p.mountpoint, "") for p in harddiskmanager.getMountedPartitions()]
+		self.mountpoints = [os.path.join(p.mountpoint, "") for p in harddiskmanager.getMountedPartitions()]
 		self.mountpoints.sort(reverse=True)
 
 	def getMountpoint(self, file):
-		file = pathjoin(realpath(file), "")
+		file = os.path.join(os.path.realpath(file), "")
 		for m in self.mountpoints:
 			if file.startswith(m):
 				return m
 		return False
 
 	def getMountpointLink(self, file):
-		if realpath(file) == file:
+		if os.path.realpath(file) == file:
 			return self.getMountpoint(file)
 		else:
 			if file[-1] == "/":
 				file = file[:-1]
 			mp = self.getMountpoint(file)
 			last = file
-			file = dirname(file)
+			file = os.path.dirname(file)
 			while last != "/" and mp == self.getMountpoint(file):
 				last = file
-				file = dirname(file)
-			return pathjoin(last, "")
+				file = os.path.dirname(file)
+			return os.path.join(last, "")
 
 	def getSelection(self):
 		if self.l.getCurrentSelection() is None:
@@ -158,7 +155,7 @@ class FileList(MenuList):
 		return self.list
 
 	def inParentDirs(self, dir, parents):
-		dir = realpath(dir)
+		dir = os.path.realpath(dir)
 		for p in parents:
 			if dir.startswith(p):
 				return True
@@ -179,7 +176,7 @@ class FileList(MenuList):
 
 		if directory is None and self.showMountpoints: # present available mountpoints
 			for p in harddiskmanager.getMountedPartitions():
-				path = pathjoin(p.mountpoint, "")
+				path = os.path.join(p.mountpoint, "")
 				if path not in self.inhibitMounts and not self.inParentDirs(path, self.inhibitDirs):
 					self.list.append(FileEntryComponent(name=p.description, absolute=path, isDir=True))
 			files = []
@@ -207,15 +204,15 @@ class FileList(MenuList):
 			directories.sort()
 			files.sort()
 		else:
-			if isdir(directory):
+			if fileExists(directory):
 				try:
-					files = listdir(directory)
+					files = os.listdir(directory)
 				except:
 					files = []
 				files.sort()
 				tmpfiles = files[:]
 				for x in tmpfiles:
-					if isdir(directory + x):
+					if os.path.isdir(directory + x):
 						directories.append(directory + x + "/")
 						files.remove(x)
 
@@ -309,12 +306,12 @@ def MultiFileSelectEntryComponent(name, absolute=None, isDir=False, selected=Fal
 	x, y, w, h = parameters.get("FileListMultiName", applySkinFactor(55, 0, 600, 25))
 	res.append((eListboxPythonMultiContent.TYPE_TEXT, x, y, w, h, 0, RT_HALIGN_LEFT, name))
 	if isDir:
-		png = LoadPixmap(cached=True, path=resolveFilename(SCOPE_GUISKIN, "extensions/directory.png"))
+		png = LoadPixmap(cached=True, path=resolveFilename(SCOPE_CURRENT_SKIN, "extensions/directory.png"))
 	else:
 		extension = name.split('.')
 		extension = extension[-1].lower()
 		if extension in EXTENSIONS:
-			png = LoadPixmap(resolveFilename(SCOPE_GUISKIN, "extensions/" + EXTENSIONS[extension] + ".png"))
+			png = LoadPixmap(resolveFilename(SCOPE_CURRENT_SKIN, "extensions/" + EXTENSIONS[extension] + ".png"))
 		else:
 			png = None
 	if png is not None:
@@ -322,9 +319,9 @@ def MultiFileSelectEntryComponent(name, absolute=None, isDir=False, selected=Fal
 		res.append((eListboxPythonMultiContent.TYPE_PIXMAP_ALPHABLEND, x, y, w, h, png))
 	if not name.startswith('<'):
 		if selected:
-			icon = LoadPixmap(cached=True, path=resolveFilename(SCOPE_GUISKIN, "icons/lock_on.png"))
+			icon = LoadPixmap(cached=True, path=resolveFilename(SCOPE_CURRENT_SKIN, "icons/lock_on.png"))
 		else:
-			icon = LoadPixmap(cached=True, path=resolveFilename(SCOPE_GUISKIN, "icons/lock_off.png"))
+			icon = LoadPixmap(cached=True, path=resolveFilename(SCOPE_CURRENT_SKIN, "icons/lock_off.png"))
 		x, y, w, h = parameters.get("FileListMultiLock", applySkinFactor(2, 0, 25, 25))
 		res.append((eListboxPythonMultiContent.TYPE_PIXMAP_ALPHABLEND, x, y, w, h, icon))
 	return res
@@ -363,23 +360,19 @@ class MultiFileSelectList(FileList):
 						self.selectedFiles.remove(realPathname)
 					except:
 						try:
-							self.selectedFiles.remove(normpath(realPathname))
+							self.selectedFiles.remove(os.path.normpath(realPathname))
 						except (IOError, OSError) as err:
 							print("[FileList] Error %d: Can't remove '%s'!  (%s)" % (err.errno, realPathname, err.strerror))
 				else:
 					SelectState = True
-					if (realPathname not in self.selectedFiles) and (normpath(realPathname) not in self.selectedFiles):
+					if (realPathname not in self.selectedFiles) and (os.path.normpath(realPathname) not in self.selectedFiles):
 						self.selectedFiles.append(realPathname)
 				newList[idx] = MultiFileSelectEntryComponent(name=x[0][3], absolute=x[0][0], isDir=x[0][1], selected=SelectState)
 			self.list = newList
 			self.l.setList(self.list)
 
 	def getSelectedList(self):
-		selectedFilesExist = []
-		for x in self.selectedFiles:
-			if exists(x):
-				selectedFilesExist.append(x)
-		return selectedFilesExist
+		return self.selectedFiles
 
 	def changeDir(self, directory, select=None):
 		self.list = []
@@ -396,7 +389,7 @@ class MultiFileSelectList(FileList):
 
 		if directory is None and self.showMountpoints: # present available mountpoints
 			for p in harddiskmanager.getMountedPartitions():
-				path = pathjoin(p.mountpoint, "")
+				path = os.path.join(p.mountpoint, "")
 				if path not in self.inhibitMounts and not self.inParentDirs(path, self.inhibitDirs):
 					self.list.append(MultiFileSelectEntryComponent(name=p.description, absolute=path, isDir=True))
 			files = []
@@ -423,15 +416,15 @@ class MultiFileSelectList(FileList):
 			directories.sort()
 			files.sort()
 		else:
-			if isdir(directory):
+			if fileExists(directory):
 				try:
-					files = listdir(directory)
+					files = os.listdir(directory)
 				except:
 					files = []
 				files.sort()
 				tmpfiles = files[:]
 				for x in tmpfiles:
-					if isdir(directory + x):
+					if os.path.isdir(directory + x):
 						directories.append(directory + x + "/")
 						files.remove(x)
 
@@ -444,7 +437,7 @@ class MultiFileSelectList(FileList):
 			for x in directories:
 				if not (self.inhibitMounts and self.getMountpoint(x) in self.inhibitMounts) and not self.inParentDirs(x, self.inhibitDirs):
 					name = x.split('/')[-2]
-					alreadySelected = (x in self.selectedFiles) or (normpath(x) in self.selectedFiles)
+					alreadySelected = (x in self.selectedFiles) or (os.path.normpath(x) in self.selectedFiles)
 					self.list.append(MultiFileSelectEntryComponent(name=name, absolute=x, isDir=True, selected=alreadySelected))
 
 		if self.showFiles:
@@ -458,7 +451,7 @@ class MultiFileSelectList(FileList):
 				if (self.matchingPattern is None) or self.matchingPattern.search(path):
 					alreadySelected = False
 					for entry in self.selectedFiles:
-						if self.useServiceRef and basename(entry) == x:
+						if self.useServiceRef and os.path.basename(entry) == x:
 							alreadySelected = True
 						elif entry == path:
 							alreadySelected = True

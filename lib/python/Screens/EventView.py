@@ -15,7 +15,7 @@ from Screens.TimerEntry import TimerEntry
 from Plugins.Plugin import PluginDescriptor
 from Tools.BoundFunction import boundFunction
 from Tools.FallbackTimer import FallbackTimerList
-from time import localtime, strftime
+from time import localtime
 from Components.config import config
 
 
@@ -244,10 +244,7 @@ class EventViewBase:
 		self["epg_eventname"].setText(event.getEventName())
 		self["epg_description"].setText(text)
 		self["FullDescription"].setText(ext)
-		begint = event.getBeginTime()
-		begintime = localtime(begint)
-		endtime = localtime(begint + event.getDuration())
-		self["datetime"].setText("%s - %s" % (strftime("%s, %s" % (config.usage.date.short.value, config.usage.time.short.value), begintime), strftime(config.usage.time.short.value, endtime)))
+		self["datetime"].setText(event.getBeginTimeString())
 		self["duration"].setText(_("%d min") % (event.getDuration() / 60))
 		self["key_red"].setText("")
 		if self.SimilarBroadcastTimer is not None:
@@ -294,7 +291,8 @@ class EventViewBase:
 		if ret is not None:
 			text = '\n\n' + _('Similar broadcasts:')
 			for x in sorted(ret, key=lambda x: x[1]):
-				text += "\n%s  -  %s" % (strftime(config.usage.date.long.value + ", " + config.usage.time.short.value, localtime(x[1])), x[0])
+				t = localtime(x[1])
+				text += '\n%02d.%02d.%d, %02d:%02d  -  %s' % (t[2], t[1], t[0], t[3], t[4], x[0])
 
 			descr = self["epg_description"]
 			descr.setText(descr.getText() + text)
