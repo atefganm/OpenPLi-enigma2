@@ -1,6 +1,6 @@
 from keyids import KEYIDS
 from Components.config import config
-from Components.SystemInfo import SystemInfo
+from Components.RcModel import rc_model
 
 keyBindings = {}
 
