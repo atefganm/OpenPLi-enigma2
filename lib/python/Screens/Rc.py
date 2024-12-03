@@ -22,6 +22,7 @@ class Rc:
 					("indicatorL" + str(i), "indicatorU" + str(i))
 				)
 			)
+		self.isDefaultRc = rc_model.rcIsDefault()
 		self.rcPositions = RcPositions()
 		self.oldNSelectedKeys = self.nSelectedKeys = 0
 		self.clearSelectedKeys()
@@ -80,7 +81,10 @@ class Rc:
 				pm.hide()
 
 	def initRc(self):
-		self["rc"].setPixmapNum(0)
+		if self.isDefaultRc:
+			self["rc"].setPixmapNum(config.misc.rcused.value)
+		else:
+			self["rc"].setPixmapNum(0)
 		rcHeight = self["rc"].getSize()[1]
 		for kp in self.selectpics:
 			nbreaks = len(kp.pixmaps)
