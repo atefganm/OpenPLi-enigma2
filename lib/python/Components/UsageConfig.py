@@ -750,6 +750,12 @@ def InitUsageConfig():
 		})
 		config.av.sync_mode.addNotifier(setSyncMode)
 
+	def quadpip_mode_notifier(configElement):
+		if BoxInfo.getItem("HasQuadpip"):
+			open(BoxInfo.getItem("HasQuadpip"), "w").write("mosaic" if configElement.value else "normal")
+	config.usage.QuadpipMode = ConfigYesNo(default=False)
+	config.usage.QuadpipMode.addNotifier(quadpip_mode_notifier)
+
 	config.subtitles = ConfigSubsection()
 	config.subtitles.show = ConfigYesNo(default=True)
 	config.subtitles.ttx_subtitle_colors = ConfigSelection(default="1", choices=[
