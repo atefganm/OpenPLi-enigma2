@@ -13,6 +13,7 @@
 #include <lib/base/ebase.h>
 #include <lib/base/eenv.h>
 #include <lib/base/eerror.h>
+#include <lib/base/esimpleconfig.h>
 #include <lib/base/init.h>
 #include <lib/base/init_num.h>
 #include <lib/gdi/gmaindc.h>
@@ -134,6 +135,26 @@ public:
 	}
 };
 
+static const std::string getConfigCurrentSpinner(const char* key)
+{
+	auto value = eSimpleConfig::getString(key);
+
+	// if value is NOT empty, means config.skin.primary_skin exists in settings file, so return SCOPE_CURRENT_SKIN + "/spinner"
+	// ( /usr/share/enigma2/MYSKIN/spinner ) BUT check if /usr/share/enigma2/MYSKIN/spinner/wait1.png exist
+	if (!value.empty())
+	{
+		replace(value, "skin.xml", "spinner");
+		std::string png_location = eEnv::resolve("${datadir}/enigma2/" + value + "/wait1.png");
+		std::ifstream png(png_location.c_str());
+		if (png.good()) {
+			png.close();
+			return value;
+		}
+	}
+
+	return "spinner"; // fallback on default system spinner
+}
+
 int exit_code;
 
 void quitMainloop(int exitCode)
@@ -204,7 +225,7 @@ int main(int argc, char **argv)
 	printf("DVB_API_VERSION %d DVB_API_VERSION_MINOR %d\n", DVB_API_VERSION, DVB_API_VERSION_MINOR);
 
 	// get enigma2 debug level settings
-	debugLvl = getenv("ENIGMA_DEBUG_LVL") ? atoi(getenv("ENIGMA_DEBUG_LVL")) : 4;
+	debugLvl = getenv("ENIGMA_DEBUG_LVL") ? atoi(getenv("ENIGMA_DEBUG_LVL")) : eSimpleConfig::getInt("config.crash.e2_debug_level", 4);
 	if (debugLvl < 0)
 		debugLvl = 0;
 	printf("ENIGMA_DEBUG_LVL=%d\n", debugLvl);
