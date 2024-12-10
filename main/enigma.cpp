@@ -135,26 +135,6 @@ public:
 	}
 };
 
-static const std::string getConfigCurrentSpinner(const char* key)
-{
-	auto value = eSimpleConfig::getString(key);
-
-	// if value is NOT empty, means config.skin.primary_skin exists in settings file, so return SCOPE_CURRENT_SKIN + "/spinner"
-	// ( /usr/share/enigma2/MYSKIN/spinner ) BUT check if /usr/share/enigma2/MYSKIN/spinner/wait1.png exist
-	if (!value.empty())
-	{
-		replace(value, "skin.xml", "spinner");
-		std::string png_location = eEnv::resolve("${datadir}/enigma2/" + value + "/wait1.png");
-		std::ifstream png(png_location.c_str());
-		if (png.good()) {
-			png.close();
-			return value;
-		}
-	}
-
-	return "spinner"; // fallback on default system spinner
-}
-
 int exit_code;
 
 void quitMainloop(int exitCode)
