@@ -79,7 +79,7 @@ class eDVBCISlot: public iObject, public sigc::trackable
 	eMainloop *m_context;
 	int m_ciplus_routing_tunernum;
 	bool m_operator_profiles_disabled;
-	bool m_ca0_excluded;
+	int m_alt_ca_handling;
 	std::string m_ciplus_routing_input;
 	std::string m_ciplus_routing_ci_input;
 
@@ -111,10 +111,8 @@ class eDVBCISlot: public iObject, public sigc::trackable
 	int setClockRate(int);
 	void determineCIVersion();
 	int setEnabled(bool);
-	static std::string getTunerLetter(int tuner_no) { return std::string(1, char(65 + tuner_no)); }
-	static std::string getTunerLetterDM(int);
-	static char* readInputCI(int);
 public:
+	static std::string getTunerLetter(int tuner_no) { return std::string(1, char(65 + tuner_no)); }
 	enum {stateRemoved, stateInserted, stateInvalid, stateResetted, stateDisabled};
 	enum {versionUnknown = -1, versionCI = 0, versionCIPlus1 = 1, versionCIPlus2 = 2};
 	eDVBCISlot(eMainloop *context, int nr);
@@ -133,8 +131,8 @@ public:
 	int getSlotID();
 	int getNumOfServices();
 	int getVersion();
+	int getDescramblingOptions() { return m_alt_ca_handling; };
 	bool getIsOperatorProfileDisabled() { return m_operator_profiles_disabled; };
-	bool getIsCA0Excluded() { return m_ca0_excluded; };
 	int16_t getCADemuxID() { return m_ca_demux_id; };
 	int getTunerNum() { return m_tunernum; };
 	int getUseCount() { return use_count; };
