@@ -219,7 +219,9 @@ keyDescriptions = [{  # id=0 - dmm0 remote directory, DM8000.
 	# Discrete power codes
 	KEYIDS["KEY_POWER2"]: ("POWER2",),
 	KEYIDS["KEY_SUSPEND"]: ("SUSPEND",),
-	KEYIDS["KEY_WAKEUP"]: ("WAKEUP",)
+	KEYIDS["KEY_WAKEUP"]: ("WAKEUP",),
+	KEYIDS["KEY_MP3"]: ("MP3",),
+	KEYIDS["KEY_VOD"]: ("VOD",)
 }, {  # id=3 - XP1000.
 	# The xp1000/rcpositions file defines PLAY and PAUSE
 	# at the same location where it should just define
@@ -449,14 +451,17 @@ def queryKeyBinding(context, action):
 
 
 def getKeyDescription(key):
-	rcType = config.plugins.remotecontroltype.rctype.value
-	# rcType = config.misc.inputdevices.rcType.value
-	if rcType == 14:  # XP1000
-		idx = 3
-	elif rcType == 18:  # F1
-		idx = 4
+	if rc_model.rcIsDefault():
+		idx = config.misc.rcused.value
 	else:
-		idx = 2
+		rcType = config.plugins.remotecontroltype.rctype.value
+		# rcType = config.misc.inputdevices.rcType.value
+		if rcType == 14:  # XP1000
+			idx = 3
+		elif rcType == 18:  # F1
+			idx = 4
+		else:
+			idx = 2
 	return keyDescriptions[idx].get(key)
 
 
