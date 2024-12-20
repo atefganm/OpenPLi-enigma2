@@ -4,6 +4,8 @@
                     <hardware type="dm500hd" />
                     <hardware type="dm800se" />
                     <hardware type="dm7020hd" />
+                    <hardware type="dm820" />
+                    <hardware type="dm7080" />
                     <tag type="System" />
 	  </prerequisites>
           <info>
