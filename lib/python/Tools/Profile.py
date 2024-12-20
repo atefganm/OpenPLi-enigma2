@@ -41,7 +41,9 @@ def profile(id):
 			else:
 				perc = PERCENTAGE_START
 			try:
-				open("/proc/progress", "w").write("%d \n" % perc)
+				f = open("/proc/progress", "w")
+				f.write("%d \n" % perc)
+				f.close()
 			except IOError:
 				pass
 
