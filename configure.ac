@@ -153,7 +153,7 @@ AM_CONDITIONAL(HAVE_COLORLCD800, test x"$withcolorlcd800" != xno)
 
 AM_CONDITIONAL(DMAMLOGIC, test "$BOXTYPE" == "dreamone" -o "$BOXTYPE" == "dreamtwo")
 AM_CONDITIONAL(DREAMBOX, test `echo "$BOXTYPE" | cut -b 1-2` == "dm" -o `echo "$BOXTYPE" | cut -b 1-5` == "dream")
-AM_CONDITIONAL(HAVE_TEMPFANCONTROL, test "$BOXTYPE" == dm8000 -o "$BOXTYPE" == dm800se -o "$BOXTYPE" == dm500hd)
+AM_CONDITIONAL(HAVE_TEMPFANCONTROL, test "$BOXTYPE" == dm8000 -o "$BOXTYPE" == dm800se -o "$BOXTYPE" == dm500hd -o "$BOXTYPE" == dm820 -o "$BOXTYPE" == dm7080)
 
 AM_CONDITIONAL(DREAMONE, test "$BOXTYPE" == dreamone)
 AM_CONDITIONAL(DREAMTWO, test "$BOXTYPE" == dreamtwo)
