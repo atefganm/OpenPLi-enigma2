@@ -43,7 +43,6 @@ screens = {}  # Dictionary of images associated with screen entries.
 setups = {}  # Dictionary of images associated with setup menus.
 switchPixmap = {}  # Dictionary of switch images.
 windowStyles = {}  # Dictionary of window styles for each screen ID.
-constantWidgets = {}
 
 config.skin = ConfigSubsection()
 skin = resolveFilename(SCOPE_SKIN, DEFAULT_SKIN)
@@ -426,7 +425,7 @@ def loadPixmap(path, desktop, width=0, height=0):
 	option = path.find("#")
 	if option != -1:
 		path = path[:option]
-	if basename(path) in ("rc.png", "rc0.png", "rc1.png", "rc2.png", "oldrc.png"):
+	if not rc_model.rcIsDefault() and basename(path) in ("rc.png", "rc0.png", "rc1.png", "rc2.png", "oldrc.png"):
 		path = rc_model.getRcImg()
 	pixmap = LoadPixmap(path, desktop, None, width, height)
 	if pixmap is None:
@@ -540,7 +539,7 @@ class AttributeParser:
 
 	def secondfont(self, value):
 		self.guiObject.setSecondFont(parseFont(value, self.scaleTuple))
-
+		
 	def widgetBorderColor(self, value):
 		self.guiObject.setWidgetBorderColor(parseColor(value))
 
@@ -837,10 +836,10 @@ def loadSingleSkinData(desktop, screenID, domSkin, pathSkin, scope=SCOPE_CURRENT
 				parameters["PartnerBoxE2TimerIconRepeat"] = applySkinFactor(510, 30, 20, 20)
 				parameters["PartnerBoxE2TimerState"] = applySkinFactor(150, 50, 150, 20)
 				parameters["PartnerBoxE2TimerTime"] = applySkinFactor(0, 50, 150, 20)
-				parameters["PartnerBoxEntryListName"] = applySkinFactor(5, 0, 150, 20)
-				parameters["PartnerBoxEntryListIP"] = applySkinFactor(120, 0, 150, 20)
-				parameters["PartnerBoxEntryListPort"] = applySkinFactor(270, 0, 100, 20)
-				parameters["PartnerBoxEntryListType"] = applySkinFactor(410, 0, 100, 20)
+				parameters["PartnerBoxEntryListName"] = applySkinFactor(5, 0, 150, 25)
+				parameters["PartnerBoxEntryListIP"] = applySkinFactor(120, 0, 150, 25)
+				parameters["PartnerBoxEntryListPort"] = applySkinFactor(270, 0, 100, 25)
+				parameters["PartnerBoxEntryListType"] = applySkinFactor(410, 0, 100, 25)
 				parameters["PartnerBoxTimerName"] = applySkinFactor(0, 30, 20)
 				parameters["PartnerBoxTimerServicename"] = applySkinFactor(0, 0, 30)
 				parameters["SHOUTcastListItem"] = applySkinFactor(20, 18, 22, 69, 20, 23, 43, 22)
@@ -954,11 +953,6 @@ def loadSingleSkinData(desktop, screenID, domSkin, pathSkin, scope=SCOPE_CURRENT
 				# print("[Skin] DEBUG: Setup key='%s', image='%s'." % (key, image))
 			else:
 				raise SkinError("Tag setup needs key and image, got key='%s' and image='%s'" % (key, image))
-	for tag in domSkin.findall("constant-widgets"):
-		for constant_widget in tag.findall("constant-widget"):
-			name = constant_widget.attrib.get("name")
-			if name:
-				constantWidgets[name] = constant_widget
 	for tag in domSkin.findall("subtitles"):
 		from enigma import eSubtitleWidget
 		scale = ((1, 1), (1, 1))
@@ -1197,21 +1191,6 @@ def readSkin(screen, skin, names, desktop):
 	screen.renderer = []
 	usedComponents = set()
 
-	def processConstant(constant_widget, context):
-		wname = constant_widget.attrib.get("name")
-		if wname:
-			try:
-				cwvalue = constantWidgets[wname]
-			except KeyError:
-				raise SkinError("Given constant-widget '%s' not found in skin" % wname)
-		if cwvalue:
-			for x in cwvalue:
-				myScreen.append((x))
-		try:
-			myScreen.remove(constant_widget)
-		except ValueError:
-			pass
-
 	def processNone(widget, context):
 		pass
 
@@ -1351,10 +1330,7 @@ def readSkin(screen, skin, names, desktop):
 		screen.additionalWidgets.append(w)
 
 	def processScreen(widget, context):
-		widgets = widget
-		for w in widgets.findall('constant-widget'):
-			processConstant(w, context)
-		for w in widgets:
+		for w in widget:
 			conditional = w.attrib.get("conditional")
 			if conditional and not [i for i in conditional.split(",") if i in screen.keys()]:
 				continue
@@ -1386,7 +1362,6 @@ def readSkin(screen, skin, names, desktop):
 
 	processors = {
 		None: processNone,
-		"constant-widget": processConstant,
 		"widget": processWidget,
 		"applet": processApplet,
 		"eLabel": processLabel,
