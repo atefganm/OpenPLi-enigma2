@@ -2,7 +2,7 @@ from os.path import isfile
 
 from enigma import eRCInput, eTimer, eWindow, getDesktop
 
-from skin import GUI_SKIN_ID, DISPLAY_SKIN_ID, applyAllAttributes, menus, screens, setups
+from skin import GUI_SKIN_ID, applyAllAttributes, menus, screens, setups
 from Components.config import config
 from Components.GUIComponent import GUIComponent
 from Components.Pixmap import Pixmap
@@ -241,8 +241,7 @@ class Screen(dict):
 				f()
 
 	def applySkin(self):
-		skin_id = DISPLAY_SKIN_ID if isinstance(self, ScreenSummary) else GUI_SKIN_ID
-		self.scale = ((getDesktop(skin_id).size().width(), getDesktop(skin_id).size().width()), (getDesktop(skin_id).size().height(), getDesktop(skin_id).size().height()))
+		self.scale = ((getDesktop(GUI_SKIN_ID).size().width(), getDesktop(GUI_SKIN_ID).size().width()), (getDesktop(GUI_SKIN_ID).size().height(), getDesktop(GUI_SKIN_ID).size().height()))
 		zPosition = 0
 		for (key, value) in self.skinAttributes:
 			if key in ("baseResolution", "resolution"):

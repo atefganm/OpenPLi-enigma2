@@ -94,9 +94,9 @@ class Wizard(Screen):
 				self.wizard[self.lastStep]["config"]["type"] = type
 				if type == "ConfigList" or type == "standalone":
 					try:
-						exec("from Screens." + str(attrs.get('module')) + " import *", globals())
+						exec("from Screens." + str(attrs.get('module')) + " import *")
 					except:
-						exec("from " + str(attrs.get('module')) + " import *", globals())
+						exec("from " + str(attrs.get('module')) + " import *")
 
 					self.wizard[self.lastStep]["config"]["screen"] = eval(str(attrs.get('screen')))
 					if 'args' in attrs:
