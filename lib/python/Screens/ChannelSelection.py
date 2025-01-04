@@ -1439,9 +1439,6 @@ class ChannelSelectionBase(Screen, HelpableScreen):
 		self["key_yellow"] = Button(_("Provider"))
 		self["key_blue"] = Button(_("Favourites"))
 
-		self["key_menu"] = StaticText(_("MENU"))
-		self["key_info"] = StaticText(_("INFO"))
-
 		self["list"] = ServiceList(self)
 		self.servicelist = self["list"]
 
@@ -2064,6 +2061,9 @@ class ChannelSelection(ChannelSelectionBase, ChannelSelectionEdit, ChannelSelect
 		ChannelSelectionEPG.__init__(self)
 		SelectionEventInfo.__init__(self)
 
+		self["key_menu"] = StaticText(_("MENU"))
+		self["key_info"] = StaticText(_("INFO"))
+
 		self["actions"] = HelpableActionMap(self, ["OkCancelActions", "TvRadioActions"],
 			{
 				"cancel": (self.cancel, _("Cancel")),
@@ -2646,6 +2646,9 @@ class ChannelSelectionRadio(ChannelSelectionBase, ChannelSelectionEdit, ChannelS
 		self.onLayoutFinish.append(self.onCreate)
 
 		self.info = session.instantiateDialog(RadioInfoBar) # our simple infobar
+
+		self["key_menu"] = StaticText(_("MENU"))
+		self["key_info"] = StaticText(_("INFO"))
 
 		self["actions"] = HelpableActionMap(self, ["OkCancelActions", "TvRadioActions"],
 			{
