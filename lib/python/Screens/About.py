@@ -38,21 +38,13 @@ class About(Screen):
 		AboutText += _("Image: ") + about.getImageTypeString() + "\n"
 		AboutText += _("OE Version: ") + about.getOEVersionString() + "\n"
 		AboutText += _("Build date: ") + about.getBuildDateString() + "\n"
-		ImageVersion = _("Last update: ") + about.getImageVersionString()
-		self["ImageVersion"] = StaticText(ImageVersion)
-		AboutText += ImageVersion + "\n"
+		AboutText += _("Last update: ") + about.getUpdateDateString() + "\n"
 
 		# [WanWizard] Removed until we find a reliable way to determine the installation date
 		# AboutText += _("Installed: ") + about.getFlashDateString() + "\n"
 
-		# get enigma version, and put the release version in front
 		EnigmaVersion = about.getEnigmaVersionString()
-		EnigmaVersion = EnigmaVersion.rsplit("-", EnigmaVersion.count("-") - 2)
-		if len(EnigmaVersion) == 3:
-			EnigmaVersion  = EnigmaVersion[0] + " (" + EnigmaVersion[2] + "-" + EnigmaVersion[1] + ")"
-		else:
-			EnigmaVersion = EnigmaVersion[0] + " (" + EnigmaVersion[1] + ")"
-		EnigmaVersion = _("Enigma version: ") + EnigmaVersion
+		EnigmaVersion = "%s%s (%s)" % (_("Enigma version: "), EnigmaVersion[:10], EnigmaVersion[11:])
 		self["EnigmaVersion"] = StaticText(EnigmaVersion)
 		AboutText += "\n" + EnigmaVersion + "\n"
 
@@ -223,13 +215,9 @@ class CommitInfo(Screen):
 
 		self["key_red"] = Button(_("Cancel"))
 
-		# get the branch to display from the boxinfo image type and version
+		# get the branch to display from the Enigma version
 		try:
-			# develop-type images have no version but a revision number
-			if BoxInfo.getItem('imagetype') == "rev":
-				branch = "?sha=" + BoxInfo.getItem('imageversion')
-			else:
-				branch = "?sha=%s-%s" % (BoxInfo.getItem('imagetype'),BoxInfo.getItem('imageversion'))
+			branch = f"?sha={about.getEnigmaBranchString()}"
 		except:
 			branch = ""
 		branch_e2plugins = "?sha=python3"
