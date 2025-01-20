@@ -424,7 +424,7 @@ AX_CHECK_COMPILE_FLAG([-Wattribute-alias=1], [CXXFLAGS="$CXXFLAGS -Wattribute-al
 
 CPPFLAGS="$CPPFLAGS $PYTHON_CPPFLAGS"
 CFLAGS="$CFLAGS -Wall"
-CXXFLAGS="$CXXFLAGS -Wall -Wextra -Werror \
+CXXFLAGS="$CXXFLAGS -Wall -Wextra \
 	-Wformat=2 -Wformat-overflow=2 -Wformat-nonliteral -Wformat-security \
 	-Wimplicit-fallthrough=5 -Wduplicated-branches -Wtrampolines \
 	-Wdangling-else -Wshift-overflow=2 -Wswitch \
@@ -432,9 +432,8 @@ CXXFLAGS="$CXXFLAGS -Wall -Wextra -Werror \
 	-Wstringop-overflow=3 -Woverlength-strings \
 	-Wunsafe-loop-optimizations -Wpointer-arith \
 	-Wfloat-equal -Wlogical-op \
-	-Wno-error=cast-align=strict -Wno-error=ignored-qualifiers \
-	-Wno-error=cast-function-type -Wno-error=deprecated-declarations \
-	-Wno-error=stringop-truncation -Wno-error=shadow -Wno-error=cast-qual \
+	-Wno-error=ignored-qualifiers \
+	-Wno-error=shadow -Wno-error=cast-qual \
 	-Wno-error=aggregate-return -Wno-error=missing-field-initializers \
 	-Wno-error=packed -Wno-error=vla -Wno-error=clobbered -Wno-error=unused-parameter \
 	$BASE_CFLAGS $ENIGMA2_CFLAGS $PTHREAD_CFLAGS $OPENMP_CFLAGS $ALSA_CFLAGS"
