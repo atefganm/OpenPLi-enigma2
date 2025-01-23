@@ -4840,32 +4840,37 @@ msgstr ""
 msgid "Infobar Subservice Quickzap Actions"
 msgstr ""
 
+#, fuzzy
 msgid "Infobar Subservice Selection Actions"
-msgstr "Дії кнопок на Екрані вибору Підканалів"
+msgstr "Дії при виборі скіну"
 
+#, fuzzy
 msgid "Infobar Subtitle Selection Actions"
-msgstr "Дії кнопок на Екрані вибору Субтитрів"
+msgstr "Дії при виборі скіну"
 
+#, fuzzy
 msgid "Infobar Teletext Actions"
-msgstr "Дії кнопок на Екрані Телетексту"
+msgstr "Дії при виборі скіну"
 
 msgid "Infobar Timer Button Actions"
-msgstr "Дії кнопок у Меню таймерів"
+msgstr ""
 
 msgid "Infobar Timeshift Actions"
-msgstr "Дії кнопок у Таймшифт"
+msgstr "Дії укнопок у Таймшифт"
 
+#, fuzzy
 msgid "Infobar Timeshift Activate Actions"
-msgstr "Дії кнопок при активації Таймшифту"
+msgstr "Розміщення таймшифт"
 
 msgid "Infobar Vmode Button Actions"
-msgstr "Дії кнопок в Vmode"
+msgstr ""
 
 msgid "Infobar frontend data source"
 msgstr "Джерело відображення даних в Інфобарі"
 
+#, fuzzy
 msgid "InfobarEPG Actions"
-msgstr "Дії кнопок на Екрані ЕПГ"
+msgstr "Час показу Інфобару"
 
 msgid "Information"
 msgstr "Інформація"
@@ -4912,14 +4917,15 @@ msgstr "Вхід"
 msgid "Input "
 msgstr "Вхід "
 
+#, fuzzy
 msgid "Input Actions"
-msgstr "Дії кнопок при виборі Входу"
+msgstr "Вхід "
 
 msgid "Input Ascii Actions"
-msgstr "Дії кнопок в Меню Ascii"
+msgstr ""
 
 msgid "Input Box Actions"
-msgstr "Дії кнопок при входу Тюнера"
+msgstr ""
 
 msgid "Input Stream ID"
 msgstr "Вхідний ID потоку"
@@ -5140,8 +5146,9 @@ msgstr "Кнопка Канали"
 msgid "Keyboard"
 msgstr "Клавіатура"
 
+#, fuzzy
 msgid "Keyboard Input Actions"
-msgstr "Дії кнопок клавіатури"
+msgstr "Функції Віртуального клавіатури"
 
 msgid "Keyboard data entry"
 msgstr "Введення даних з клавіатури"
@@ -5313,11 +5320,12 @@ msgstr[0] "Версія списку %(ver)d, знайдено %(num)d кана�
 msgstr[1] "Версія списку %(ver)d, знайдено %(num)d канали"
 msgstr[2] "Версія списку %(ver)d, знайдено %(num)d каналів"
 
+#, fuzzy
 msgid "Listbox Actions"
-msgstr "Дії кнопок в Списку"
+msgstr "Розташування"
 
 msgid "Listbox Help Menu Actions"
-msgstr "Дії кнопок на Екрані Довідки"
+msgstr ""
 
 msgid "Listen to the radio..."
 msgstr "Слухати радіо..."
@@ -5572,11 +5580,13 @@ msgstr "Номер позиції"
 msgid "Menu"
 msgstr "Меню"
 
+#, fuzzy
 msgid "Menu Actions"
-msgstr "Дії кнопок в Меню"
+msgstr "Дії при виборі скіну"
 
+#, fuzzy
 msgid "Menu button function"
-msgstr "Призначення кнопок в Меню"
+msgstr "Виберіть дію"
 
 #, python-format
 msgid "Menusort (%s)"
@@ -5604,8 +5614,9 @@ msgstr "Мінімальний вік %d років"
 msgid "Minimum send interval"
 msgstr "Мінімальний інтервал відправки"
 
+#, fuzzy
 msgid "Minute Input Actions"
-msgstr "Дії кнопок при вводі часу"
+msgstr "Виберіть дію"
 
 msgid "Missing "
 msgstr "Відсутній "
@@ -5687,11 +5698,13 @@ msgstr "Перемістити ПІП на основний екран"
 msgid "Move Picture in Picture"
 msgstr "Перемістити картинку в картинці"
 
+#, fuzzy
 msgid "Move down a line"
-msgstr "Перемістити на позицію вниз"
+msgstr "Перейти вниз списку"
 
+#, fuzzy
 msgid "Move down a screen"
-msgstr "Перейти на екран вниз"
+msgstr "перейти до останнього запису"
 
 msgid "Move east"
 msgstr "Перемістити на схід"
@@ -5720,11 +5733,13 @@ msgstr "Перемістіть текстовий курсор до першог
 msgid "Move the text cursor to the last character"
 msgstr "Перемістіть текстовий курсор до останнього символу"
 
+#, fuzzy
 msgid "Move to first line / screen"
-msgstr "Перейти до першого рядка/екрана"
+msgstr "Перейти до наступного скіну"
 
+#, fuzzy
 msgid "Move to last line / screen"
-msgstr "Перейти до останнього рядка/екрана"
+msgstr "Перейти до наступного скіну"
 
 msgid "Move to position X"
 msgstr "Переміститися на позицію Х"
@@ -5741,8 +5756,9 @@ msgstr "Перейти на попередню сторінку"
 msgid "Move to the previous skin"
 msgstr "Перейти до попереднього скіну"
 
+#, fuzzy
 msgid "Move up a line"
-msgstr "Перемістити на позицію вгору"
+msgstr "Переміститися на позицію під номером"
 
 msgid "Move up a screen"
 msgstr "Переміщення вгору на екран"
@@ -5759,11 +5775,13 @@ msgstr "Переміститися на позицію під номером"
 msgid "Movement"
 msgstr "Переміщення"
 
+#, fuzzy
 msgid "Movie Player Actions"
-msgstr "Дії кнопок в Плеєрі"
+msgstr "Вибір записів"
 
+#, fuzzy
 msgid "Movie Selection Actions"
-msgstr "Дії кнопок у Меню виборі відео"
+msgstr "Дії при виборі скіну"
 
 msgid "Movie list configuration"
 msgstr "Конфігурація списку записів"
@@ -5879,8 +5897,9 @@ msgstr "Науру"
 msgid "Navigate up/down with UP/DOWN buttons and page up/down with LEFT/RIGHT. EXIT to return to the help screen. OK to perform the action described in the currently highlighted help."
 msgstr ""
 
+#, fuzzy
 msgid "Navigation Actions"
-msgstr "Дії кнопок Навігації"
+msgstr "Дії при виборі скіну"
 
 msgid "Nepal"
 msgstr "Непал"
@@ -6002,8 +6021,9 @@ msgstr "Немає активних підпослуг."
 msgid "No age block"
 msgstr "Вікових обмежень немає"
 
+#, fuzzy
 msgid "No config items available"
-msgstr "Немає доступних елементів конфігурації"
+msgstr "Оновлень немає"
 
 msgid ""
 "No data on transponder!\n"
@@ -6212,8 +6232,9 @@ msgstr "Зараз відтворюється"
 msgid "Now, use the contrast setting to turn up the brightness of the background as much as possible, but make sure that you can still see the difference between the two brightest levels of shades.If you have done that, press OK."
 msgstr "Тепер, використовуйте регулювання контрастності, щоб збільшити яскравість фону наскільки це можливо, але переконайтесь, що Ви все ще бачите різницю між двома самими яскравими рівнями відтінків. Якщо Ви зробили це, то натисніть ОК."
 
+#, fuzzy
 msgid "Number Actions"
-msgstr "Дії Цифрових кнопок"
+msgstr "подальшу освіту"
 
 msgid "Number of channels shown in channel selection list"
 msgstr "Кількість каналів в списку каналів"
@@ -6257,8 +6278,9 @@ msgstr "Вимкнено"
 msgid "Offline decode delay (ms)"
 msgstr "Затримка оффлайн декодування (мс)"
 
+#, fuzzy
 msgid "Ok Cancel Actions"
-msgstr ""Дії кнопок Ok Cancel"
+msgstr "Скасувати виконання?"
 
 msgid "Oman"
 msgstr "Оман"
@@ -6321,7 +6343,7 @@ msgid "Open the movie list"
 msgstr "Відкрити список фільмів"
 
 msgid "OpenWebif is used for detection on box with this IP address."
-msgstr "OpenWebif використовує тюнер з цією IP-адресою."
+msgstr ""
 
 msgid "Operating LED status in deep standby mode"
 msgstr "Яскравість LED у режимі глибокого очікування"
@@ -6366,7 +6388,7 @@ msgid "Other Subtitles & lang"
 msgstr "Інші субтитри та мова"
 
 msgid "Other buttons will jump to the help for that button, if there is help."
-msgstr "Інші кнопки переходитимуть до довідки для цієї кнопки, якщо є довідка."
+msgstr ""
 
 msgid "Other functions"
 msgstr "Інші функції"
@@ -6414,7 +6436,7 @@ msgid "PIN code needed"
 msgstr "Необхідний PIN-код"
 
 msgid "PLAY"
-msgstr "PLAY"
+msgstr ""
 
 msgid "PLAYLIST"
 msgstr ""
@@ -6438,7 +6460,7 @@ msgid "PMT PID"
 msgstr "ПІД РМТ"
 
 msgid "PORTAL"
-msgstr "ПОРТАЛ"
+msgstr ""
 
 msgid "POWER"
 msgstr ""
@@ -6558,8 +6580,9 @@ msgstr "Перу"
 msgid "Philippines"
 msgstr "Філіпіни"
 
+#, fuzzy
 msgid "PiP Setup Actions"
-msgstr "Дії кнопок в Меню конфігурації PiP"
+msgstr "Дії при виборі скіну"
 
 msgid "PiP setup"
 msgstr "Налаштування PiP"
@@ -6583,8 +6606,9 @@ msgstr "Пілот"
 msgid "Pin Userbouquet"
 msgstr "Пін Фаворита користувача"
 
+#, fuzzy
 msgid "Ping device before standby"
-msgstr "Пінгувати пристрій перед переходом у режим очікування"
+msgstr "Виявити наступні приймачі перед вимкненням"
 
 msgid "Pitcairn"
 msgstr "Піткерн"
@@ -6906,7 +6930,7 @@ msgid "Port of fallback remote receiver"
 msgstr "Порт резервного віддаленого приймача"
 
 msgid "Port used by OpenWebif on tested box."
-msgstr "Порт, який використовується OpenWebif на тестованому пристрої."
+msgstr ""
 
 msgid "Portugal"
 msgstr "Португалія"
@@ -6936,7 +6960,7 @@ msgid "Positioner setup log"
 msgstr "Налаштування Логу позиціонера"
 
 msgid "Power Key Actions"
-msgstr "Дії кнопки Вимкнення"
+msgstr ""
 
 msgid "Power LED"
 msgstr "Яскравість LED"
@@ -7273,8 +7297,9 @@ msgstr "Ram диск"
 msgid "Random"
 msgstr "Випадково"
 
+#, fuzzy
 msgid "Rass Interactive Actions"
-msgstr "Інтерактивні дії кнопок в Rass"
+msgstr "Показати інтерактивний Rass..."
 
 #, python-format
 msgid "Rating defined by broadcaster - %d"
@@ -7862,7 +7887,7 @@ msgid "Satellites"
 msgstr "Супутники"
 
 msgid "Satlist Shortcut Action"
-msgstr "Дія кнопок швидкого доступу в списку Сунутників"
+msgstr ""
 
 msgid "Sats"
 msgstr "Супутники"
@@ -7882,8 +7907,9 @@ msgstr "Зберегти"
 msgid "Save / Enter text and exit"
 msgstr "Зберегти/Ввести текст і вийти"
 
+#, fuzzy
 msgid "Save all changed settings and exit"
-msgstr "Зберегти усі змінені налаштування та вийти"
+msgstr "Зберегти/Ввести текст і вийти"
 
 msgid "Save and activate the currently selected skin"
 msgstr "Збереження і активація вибраного скіну"
@@ -8560,7 +8586,7 @@ msgid "Set as startup service"
 msgstr "Зробити канал стартовим"
 
 msgid "Set auto DiSEqC search order"
-msgstr "Встановити автоматичний порядок пошуку DiSEqC"
+msgstr ""
 
 msgid "Set blocktimes by weekday"
 msgstr "Встановити блокування по буднях"
@@ -8643,8 +8669,9 @@ msgstr "Налаштування можуть бути різними для к�
 msgid "Setup"
 msgstr "Налаштування"
 
+#, fuzzy
 msgid "Setup Actions"
-msgstr "Дії кропок в Меню Налаштувань"
+msgstr "Дії при виборі скіну"
 
 msgid "Setup hard disk"
 msgstr "Налаштування Жорсткого диску"
@@ -8676,8 +8703,9 @@ msgstr "Шифт"
 msgid "Short filenames"
 msgstr "Короткі назви файлів"
 
+#, fuzzy
 msgid "Shortcut Actions"
-msgstr ""
+msgstr "Вибір дії"
 
 msgid "Show"
 msgstr "Шоу"
@@ -9049,8 +9077,9 @@ msgstr "Пропустити перевірку інтернет з'єднанн
 msgid "Skip jumping to live TV while timeshifting with plugins"
 msgstr "Не переходити до передач при зміщенні часу за допомогою плагінів"
 
+#, fuzzy
 msgid "Sleep Timer Editor Actions"
-msgstr "Дії кнопок в Меню Таймеру сну"
+msgstr "Налаштування Таймеру сну"
 
 msgid "Sleep timer"
 msgstr "Таймер сну"
@@ -9296,8 +9325,9 @@ msgstr "Режим очікування"
 msgid "Standby / restart"
 msgstr "Меню вимкнення"
 
+#, fuzzy
 msgid "Standby Actions"
-msgstr ""
+msgstr "Режим очікування через "
 
 msgid "Standby LED"
 msgstr "LED в Режимі очікування"
@@ -9734,7 +9764,7 @@ msgstr ""
 #. TRANSLATORS: Add here whatever should be shown in the "translator" about screen, up to 6 lines (use \n for newline)
 msgid "TRANSLATOR_INFO"
 msgstr ""
-"Переклад:  kvinto - 22.01.2025\n"
+"Переклад:  kvinto - 06.01.2025\n"
 "Пошта:  badsystem@ukr.net"
 
 msgid "TS file is too large for ISO9660 level 1!"
@@ -9776,8 +9806,9 @@ msgstr "Таджикістан"
 msgid "Tanzania, United Republic of"
 msgstr "Танзанія, Об'єднана Республіка"
 
+#, fuzzy
 msgid "Teletext Actions"
-msgstr "Дії кнопок в Телетексті"
+msgstr "Вибір дії"
 
 msgid "Teletext subtitle color"
 msgstr "Колір субтитрів телетексту"
@@ -9806,8 +9837,9 @@ msgstr "Тестові вікна"
 msgid "Testscreens that are helpfull to fine-tune your display"
 msgstr "Тестові вікна допоможуть Вам завершити настройку Вашого екрану"
 
+#, fuzzy
 msgid "Text Edit Actions"
-msgstr "Дії кнопок в Меню Редагувння Тексту"
+msgstr "Редагувати виділене"
 
 msgid "Text Entry Actions"
 msgstr ""
@@ -10304,8 +10336,9 @@ msgstr "Регіон часового поясу"
 msgid "Timer"
 msgstr "Таймер"
 
+#, fuzzy
 msgid "Timer Edit Actions"
-msgstr "Дії кнопок в Меню Редагування таймера"
+msgstr "Вибір таймера"
 
 msgid "Timer Overview"
 msgstr "Огляд таймера"
@@ -10589,8 +10622,9 @@ msgstr "Величина кроку"
 msgid "Tuvalu"
 msgstr "Тувалу"
 
+#, fuzzy
 msgid "Tv Radio Actions"
-msgstr "Дії кнопок Tv Radio"
+msgstr "Вибір звуку"
 
 msgid "Two"
 msgstr "Два"
@@ -11111,8 +11145,9 @@ msgstr "Віргінські острови (Великобританія)"
 msgid "Virgin Islands (U.S.)"
 msgstr "Віргінські острови (США)"
 
+#, fuzzy
 msgid "Virtual Key Board Actions"
-msgstr "Дії кнопок у Віртуальній Клавіатурі"
+msgstr "Функції Віртуального клавіатури"
 
 msgid "Virtual KeyBoard Functions"
 msgstr "Функції Віртуального клавіатури"
@@ -11120,8 +11155,9 @@ msgstr "Функції Віртуального клавіатури"
 msgid "Virtual KeyBoard Text:"
 msgstr "Текст Віртуальної клавіатури:"
 
+#, fuzzy
 msgid "Virtual Keyboard Actions"
-msgstr "Дії кнопок у Віртуальній клавіатурі"
+msgstr "Функції Віртуального клавіатури"
 
 msgid "Virtual keyboard"
 msgstr "Віртуальна клавіатура"
@@ -11538,8 +11574,9 @@ msgstr "Коли приймач виходить з режиму очікува�
 msgid "Where to save temporary timeshift recordings?"
 msgstr "Де зберігати тимчасові записи timeshift?"
 
+#, fuzzy
 msgid "Window Actions"
-msgstr "Дії кнопок у Вікні"
+msgstr "Дії при виборі скіну"
 
 msgid "Wireless LAN"
 msgstr "Безпровідний адаптер"
@@ -11583,8 +11620,9 @@ msgstr "За допомогою цієї опції Ви можете зміню
 msgid "Without popup"
 msgstr "Без спливаючих вікон"
 
+#, fuzzy
 msgid "Wizard Actions"
-msgstr "Дії кнопок у Помічнику налаштувань"
+msgstr "Помічник налаштувань"
 
 msgid "Wizard setup"
 msgstr "Помічник налаштувань"
@@ -12306,7 +12344,7 @@ msgid "green"
 msgstr "зелений"
 
 msgid "half an hour"
-msgstr "півгодини"
+msgstr ""
 
 msgid "handicraft"
 msgstr "ремесло"
