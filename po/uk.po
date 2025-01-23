@@ -390,7 +390,7 @@ msgid "'Minimum send interval' needs to be enabled to use this option."
 msgstr "Щоб використовувати цю опцію, потрібно ввімкнути 'Мінімальний інтервал надсилання'."
 
 msgid "'Ping' is used for detection device on this address."
-msgstr ""
+msgstr "'Ping' використовується для виявлення пристрою за цією адресою."
 
 msgid "(VU+ type)"
 msgstr "(тип VU+)"
@@ -573,7 +573,7 @@ msgid "A"
 msgstr "A"
 
 msgid "A color filter can be used for better readability of DVB subtitles."
-msgstr ""
+msgstr "Для кращої читабельності субтитрів DVB можна використовувати кольоровий фільтр."
 
 msgid "A completed recording timer is about to put your receiver in standby mode. Would you like to proceed?"
 msgstr "Запис по таймеру завершено, тюнер буде переведено в режим очікування. Зробити це зараз?"
@@ -592,7 +592,7 @@ msgid "A graphical EPG for all services of a specific bouquet"
 msgstr "Графічний ЕПГ для всіх каналів певного фавориту"
 
 msgid "A highlight on the remote control image shows which button the help refers to. If more than one button performs the indicated function, more than one highlight will be shown. Text below the list indicates whether the function is for a long press of the button(s)."
-msgstr ""
+msgstr "Виділення на зображенні пульта дистанційного керування показує, до якої кнопки відноситься довідка. Якщо зазначену функцію виконує кілька кнопок, буде показано більше одного виділення. Текст під списком вказує, чи призначена функція для тривалого натискання кнопки (кнопок)."
 
 #, python-format
 msgid ""
@@ -942,7 +942,7 @@ msgid "Alpha"
 msgstr "Прозорість"
 
 msgid "Alphabetical under headings"
-msgstr ""
+msgstr "За алфавітом під заголовками"
 
 msgid "Also import at reboot/restart enigma2"
 msgstr "Також імпортуйте при перезавантаженні/перезапуску enigma2"
@@ -1861,7 +1861,7 @@ msgid "Choose the option to correct invalid EPG data."
 msgstr "Виберіть опцію для виправлення некоректних даних EPG."
 
 msgid "Choose the order in which items are displayed in Help windows"
-msgstr ""
+msgstr "Виберіть порядок відображення елементів у вікнах довідки"
 
 msgid "Choose whether AAC sound tracks should be transcoded."
 msgstr "Виберіть, чи слід перекодувати звукові доріжки AAC."
@@ -1955,7 +1955,7 @@ msgid "Codec & lang%s"
 msgstr "Кодек і мова %s"
 
 msgid "Collapse"
-msgstr ""
+msgstr "Згорнути"
 
 msgid "Collection name"
 msgstr "Назва колекції"
@@ -2462,10 +2462,10 @@ msgid "Could not record due to invalid service %s"
 msgstr "Запис неможливий, канал %s невірний"
 
 msgid "Could not retrieve basic bouquets files"
-msgstr ""
+msgstr "Не вдалося отримати файли основних фаворитів"
 
 msgid "Could not retrieve the remote support files"
-msgstr ""
+msgstr "Не вдалося отримати файли дистанційної підтримки"
 
 msgid "Country"
 msgstr "Країни"
@@ -4029,7 +4029,7 @@ msgid "Finetune"
 msgstr "Точне налаштування"
 
 msgid "Finetune the auto DiSEqC order to in your situation the satellites could be found faster."
-msgstr ""
+msgstr "Тонко налаштуйте автоматичний порядок DiSEqC, щоб у вашій ситуації супутники могли знаходитися швидше."
 
 msgid "Finished"
 msgstr "Завершено"
@@ -4250,7 +4250,7 @@ msgid "Gibraltar"
 msgstr "Гібралтар"
 
 msgid "Global Actions"
-msgstr ""
+msgstr "Глобальні дії кнопок"
 
 msgid "Go down the list"
 msgstr "Перейти вниз списку"
@@ -4478,7 +4478,7 @@ msgid "Hebrew"
 msgstr "Іврит"
 
 msgid "Help"
-msgstr ""
+msgstr "Допомога"
 
 msgid "Help Actions"
 msgstr "Дії кнопок у меню Допомоги"
@@ -4868,9 +4868,8 @@ msgstr ""
 msgid "Infobar frontend data source"
 msgstr "Джерело відображення даних в Інфобарі"
 
-#, fuzzy
 msgid "InfobarEPG Actions"
-msgstr "Час показу Інфобару"
+msgstr "Дії кнопок у екрані ЕПГ"
 
 msgid "Information"
 msgstr "Інформація"
@@ -5325,7 +5324,7 @@ msgid "Listbox Actions"
 msgstr "Розташування"
 
 msgid "Listbox Help Menu Actions"
-msgstr ""
+msgstr "Список Дій кнопок у Меню Довідки"
 
 msgid "Listen to the radio..."
 msgstr "Слухати радіо..."
@@ -5895,7 +5894,7 @@ msgid "Nauru"
 msgstr "Науру"
 
 msgid "Navigate up/down with UP/DOWN buttons and page up/down with LEFT/RIGHT. EXIT to return to the help screen. OK to perform the action described in the currently highlighted help."
-msgstr ""
+msgstr "Переміщуйтеся вгору/вниз за допомогою кнопок UP/DOWN, а сторінку вгору/вниз — за допомогою кнопок LEFT/RIGHT. EXIT, щоб повернутися до екрана довідки. OK, щоб виконати дію, описану у виділеній наразі довідці"
 
 #, fuzzy
 msgid "Navigation Actions"
@@ -6280,7 +6279,7 @@ msgstr "Затримка оффлайн декодування (мс)"
 
 #, fuzzy
 msgid "Ok Cancel Actions"
-msgstr "Скасувати виконання?"
+msgstr "Дія кнопок Ok Cancel"
 
 msgid "Oman"
 msgstr "Оман"
@@ -6343,7 +6342,7 @@ msgid "Open the movie list"
 msgstr "Відкрити список фільмів"
 
 msgid "OpenWebif is used for detection on box with this IP address."
-msgstr ""
+msgstr "OpenWebif використовується для виявлення тюнера з цією IP-адресою."
 
 msgid "Operating LED status in deep standby mode"
 msgstr "Яскравість LED у режимі глибокого очікування"
@@ -6388,7 +6387,7 @@ msgid "Other Subtitles & lang"
 msgstr "Інші субтитри та мова"
 
 msgid "Other buttons will jump to the help for that button, if there is help."
-msgstr ""
+msgstr "Інші кнопки переходитимуть до довідки для цієї кнопки, якщо є довідка."
 
 msgid "Other functions"
 msgstr "Інші функції"
@@ -6606,9 +6605,8 @@ msgstr "Пілот"
 msgid "Pin Userbouquet"
 msgstr "Пін Фаворита користувача"
 
-#, fuzzy
 msgid "Ping device before standby"
-msgstr "Виявити наступні приймачі перед вимкненням"
+msgstr "Перед тим, як перейти в режим очікування, пінгуйте пристрій"
 
 msgid "Pitcairn"
 msgstr "Піткерн"
@@ -6930,7 +6928,7 @@ msgid "Port of fallback remote receiver"
 msgstr "Порт резервного віддаленого приймача"
 
 msgid "Port used by OpenWebif on tested box."
-msgstr ""
+msgstr "Порт, який використовується OpenWebif на тестованому пристрої."
 
 msgid "Portugal"
 msgstr "Португалія"
@@ -6960,7 +6958,7 @@ msgid "Positioner setup log"
 msgstr "Налаштування Логу позиціонера"
 
 msgid "Power Key Actions"
-msgstr ""
+msgstr "Дії кнопки Power"
 
 msgid "Power LED"
 msgstr "Яскравість LED"
@@ -7151,7 +7149,7 @@ msgid "Preview selected channel"
 msgstr "Попередній перегляд обраного каналу"
 
 msgid "Previous Wizard"
-msgstr ""
+msgstr "Попередній Майстер"
 
 msgid "Primary DNS"
 msgstr "Первинний DNS"
@@ -7907,9 +7905,8 @@ msgstr "Зберегти"
 msgid "Save / Enter text and exit"
 msgstr "Зберегти/Ввести текст і вийти"
 
-#, fuzzy
 msgid "Save all changed settings and exit"
-msgstr "Зберегти/Ввести текст і вийти"
+msgstr "Зберегти усі зміни та вийти"
 
 msgid "Save and activate the currently selected skin"
 msgstr "Збереження і активація вибраного скіну"
@@ -8586,7 +8583,7 @@ msgid "Set as startup service"
 msgstr "Зробити канал стартовим"
 
 msgid "Set auto DiSEqC search order"
-msgstr ""
+msgstr "Встановити порядок автоматичного пошуку DiSEqC"
 
 msgid "Set blocktimes by weekday"
 msgstr "Встановити блокування по буднях"
@@ -8669,9 +8666,8 @@ msgstr "Налаштування можуть бути різними для к�
 msgid "Setup"
 msgstr "Налаштування"
 
-#, fuzzy
 msgid "Setup Actions"
-msgstr "Дії при виборі скіну"
+msgstr "Дії кнопок в Меню Setup"
 
 msgid "Setup hard disk"
 msgstr "Налаштування Жорсткого диску"
@@ -9764,7 +9760,7 @@ msgstr ""
 #. TRANSLATORS: Add here whatever should be shown in the "translator" about screen, up to 6 lines (use \n for newline)
 msgid "TRANSLATOR_INFO"
 msgstr ""
-"Переклад:  kvinto - 06.01.2025\n"
+"Переклад:  kvinto - 23.01.2025\n"
 "Пошта:  badsystem@ukr.net"
 
 msgid "TS file is too large for ISO9660 level 1!"
@@ -9806,9 +9802,8 @@ msgstr "Таджикістан"
 msgid "Tanzania, United Republic of"
 msgstr "Танзанія, Об'єднана Республіка"
 
-#, fuzzy
 msgid "Teletext Actions"
-msgstr "Вибір дії"
+msgstr "Дії кнопок в Телетексті"
 
 msgid "Teletext subtitle color"
 msgstr "Колір субтитрів телетексту"
@@ -9935,7 +9930,7 @@ msgid "The number of steps to change the volume on the device the keys are forwa
 msgstr "Кількість кроків для зміни гучності на пристрої, на який пересилаються клавіші."
 
 msgid "The order and grouping of the help information list can be controlled using MENU>Setup>User Interface>Settings>Sort order for help screen."
-msgstr ""
+msgstr "Порядком і групуванням списку довідкової інформації можна керувати за допомогою МЕНЮ>Налаштування>Інтерфейс Користувача>Налаштування>Порядок сортування для екрана довідки."
 
 msgid ""
 "The overscan wizard has been completed.\n"
@@ -9982,7 +9977,7 @@ msgid "The path %s already exists."
 msgstr "Цей шлях %s вже існує."
 
 msgid "The port from the streamrelay server that is used to descramble services that can only be encrypted via streamrelay"
-msgstr ""
+msgstr "Порт від сервера streamrelay, який використовується для дешифрування служб, які можна зашифрувати лише через streamrelay"
 
 #, python-format
 msgid "The results have been written to %s"
@@ -11620,9 +11615,8 @@ msgstr "За допомогою цієї опції Ви можете зміню
 msgid "Without popup"
 msgstr "Без спливаючих вікон"
 
-#, fuzzy
 msgid "Wizard Actions"
-msgstr "Помічник налаштувань"
+msgstr "Дуї кнопок у Помічнику налаштувань"
 
 msgid "Wizard setup"
 msgstr "Помічник налаштувань"
@@ -12344,7 +12338,7 @@ msgid "green"
 msgstr "зелений"
 
 msgid "half an hour"
-msgstr ""
+msgstr "півгодини"
 
 msgid "handicraft"
 msgstr "ремесло"
