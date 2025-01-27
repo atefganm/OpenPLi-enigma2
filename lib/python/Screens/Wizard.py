@@ -1,7 +1,8 @@
+from boxbranding import getMachineBrand, getMachineName
 from Screens.Screen import Screen
 from Screens.MessageBox import MessageBox
 from Components.config import config, ConfigText, ConfigPassword, KEY_LEFT, KEY_RIGHT, KEY_0, KEY_DELETE, KEY_BACKSPACE, KEY_ASCII
-
+from Components.SystemInfo import SystemInfo
 from Components.Label import Label
 from Components.Sources.StaticText import StaticText
 from Components.Slider import Slider
@@ -471,7 +472,7 @@ class Wizard(Screen):
 		return False
 
 	def getTranslation(self, text):
-		return _(text)
+		return _(text).replace("%s %s", "%s %s" % (getMachineBrand(), getMachineName()))
 
 	def updateText(self, firstset=False):
 		text = self.getTranslation(self.wizard[self.currStep]["text"])

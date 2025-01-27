@@ -1,6 +1,7 @@
 <wizard>
+
 		<step id="start" nextstep="introduction">
-			<text value="Welcome.\n\nThis start wizard will guide you through the basic setup of your receiver.\nPress the Blue or OK button on your remote control to move to the next step."/>
+			<text value="Welcome.\n\nThis start wizard will guide you through the basic setup of your %s %s.\nPress the Blue or OK button on your remote control to move to the next step."/>
 			<code>
 self.clearSelectedKeys()
 self.selectKey("OK")
@@ -11,7 +12,7 @@ self.selectKey("RED")
 		<step id="introduction" >
 			<text value="Use the up/down keys on your remote control to select an option. After that, press Blue or OK."/>
 			<list>
-				<listentry caption="Use the wizard to set up basic features" step="network"/>
+				<listentry caption="Use the wizard to set up basic features" step="nima" />
 				<listentry caption="Exit the wizard" step="end"/>
 			</list>
 			<code>
@@ -25,7 +26,7 @@ self.selectKey("OK")
 		</step>
 
 		<step id="network">
-			<text value="Please connect your receiver to the internet"/>
+			<text value="Please connect your %s %s to the internet"/>
 			<list>
 				<listentry caption="Check the internet connection" step="update"/>
 				<listentry caption="Skip internet connection check (disables automatic package installation)" step="timezone"/>
@@ -55,7 +56,7 @@ self.selectKey("OK")
 			<condition>
 self.condition = not config.misc.installwizard.opkgloaded.value
 			</condition>
-			<text value="Your receiver does not have an internet connection"/>
+			<text value="Your %s %s does not have an internet connection"/>
 			<list>
 				<listentry caption="Check the internet connection again" step="update"/>
 				<listentry caption="Skip internet connection check (disables automatic package installation)" step="timezone"/>
@@ -404,7 +405,7 @@ self.selectKey("OK")
 		</step>
 
 		<step id="end" laststep="true">
-			<text value="Thank you for using the wizard. Your receiver is now ready for use.\nPress Blue or OK to start using your receiver."/>
+			<text value="Thank you for using the wizard. Your %s %s is now ready to use.\nPlease press OK to start using your %s %s.."/>
 			<code>
 self.clearSelectedKeys()
 self.selectKey("BLUE")
@@ -412,4 +413,5 @@ self.selectKey("RED")
 self.selectKey("OK")
 			</code>
 		</step>
+
 </wizard>
