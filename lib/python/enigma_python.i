@@ -478,6 +478,7 @@ extern const char *getBoxType();
 extern void dump_malloc_stats(void);
 extern void pauseInit(void);
 extern void resumeInit(void);
+extern int getE2Flags();
 %}
 
 extern void addFont(const char *filename, const char *alias, int scale_factor, int is_replacement, int renderflags = 0);
@@ -490,6 +491,7 @@ extern const char *getBoxType();
 extern void dump_malloc_stats(void);
 extern void pauseInit(void);
 extern void resumeInit(void);
+extern int getE2Flags();
 
 %include <lib/python/python_console.i>
 %include <lib/python/python_base.i>
