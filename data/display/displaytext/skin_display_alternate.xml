@@ -2,6 +2,15 @@
 <!--  Skin: LCD from Magic by MiLo, XmlUnboundNsPrefix, Mod by HD75hd-->
 <!--suppress XmlUnboundNsPrefix, XmlUnboundNsPrefix -->
 <skin>
+	<colors>
+		<color name="oled1" value="#00adff2f" /> <!--Schriftfarbe Menue gelbgruen-->
+		<color name="oled2" value="#00ffffff" /> <!--Schriftfarbe Textroller-->
+		<color name="oled3" value="#00adff2f" /> <!--Schriftfarbe Uhrzeit usw.-->
+		<color name="oled4" value="#00adff2f" /> <!--Schriftfarbe Sender-->
+		<color name="oled5" value="#00ffffff" /> <!--Schriftfarbe Sendung-->
+		<color name="oled6" value="#00adff2f" /> <!--Schriftfarbe Sender Kanalliste-->
+		<color name="oled7" value="#00ff2525" /> <!--Schriftfarbe Uhr Standby-->
+	</colors>
 	<windowstyle id="1" type="skinned">
 		<color color="#000000" name="Background"/>
 		<color color="#ffffff" name="LabelForeground"/>
@@ -130,11 +139,11 @@
 		<widget source="parent.summary_selection" conditional="parent.summary_selection" render="Label" position="0,0" size="126,64" font="Regular;11" noWrap="1" />
 	</screen>
 	<screen name="MessageBox_summary" position="0,0" size="132,64">
-		<widget source="parent.Text" conditional="parent.Text" render="Label" position="0,0" size="132,52" font="Regular;11" verticalAlignment="center" />
+		<widget source="parent.Text" render="Label" position="0,0" size="132,52" font="Regular;11" verticalAlignment="center" />
 		<widget source="parent.selectedChoice" conditional="parent.selectedChoice" render="Label" position="0,50" size="120,14" horizontalAlignment="left" noWrap="1"  />
 	</screen>
 	<screen name="MessageBoxSimple_summary" position="0,0" size="132,64">
-		<widget source="parent.Text" conditional="parent.Text" render="Label" position="0,0" size="132,52" font="Regular;11" verticalAlignment="center" />
+		<widget source="parent.Text" render="Label" position="0,0" size="132,52" font="Regular;11" verticalAlignment="center" />
 		<widget source="parent.selectedChoice" conditional="parent.selectedChoice" render="Label" position="0,50" size="120,14" horizontalAlignment="left" noWrap="1"  />
 	</screen>
 	<screen name="JobView_summary" position="0,0" size="132,64">
