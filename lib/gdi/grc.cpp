@@ -111,7 +111,7 @@ void gRC::submit(const gOpcode &o)
 			wp = 0;
 		if (o.opcode == gOpcode::flush || o.opcode == gOpcode::shutdown || o.opcode == gOpcode::notify)
 #ifndef SYNC_PAINT
-			pthread_cond_signal(&cond); // wakeup gdi thread
+			pthread_cond_signal(&cond);  // wakeup gdi thread
 		pthread_mutex_unlock(&mutex);
 #else
 			thread(); // paint
@@ -124,8 +124,7 @@ void *gRC::thread()
 {
 	int need_notify = 0;
 #ifdef USE_LIBVUGLES2
-	if (gles_open())
-	{
+	if (gles_open()) {
 		gles_state_open();
 		gles_viewport(720, 576, 720 * 4);
 	}
@@ -227,6 +226,10 @@ void *gRC::thread()
 #endif
 		}
 	}
+#ifdef USE_LIBVUGLES2
+	gles_state_close();
+	gles_close();
+#endif
 #ifndef SYNC_PAINT
 	pthread_exit(0);
 #endif
@@ -729,13 +732,14 @@ void gPainter::sendHide(ePoint point, eSize size)
 	o.parm.setShowHideInfo->size = size;
 	m_rc->submit(o);
 }
+
 #ifdef USE_LIBVUGLES2
 void gPainter::sendShowItem(long dir, ePoint point, eSize size)
 {
-	if (m_dc->islocked())
-		return;
+	if ( m_dc->islocked() )
+		 return;
 	gOpcode o;
-	o.opcode = gOpcode::sendShowItem;
+	o.opcode=gOpcode::sendShowItem;
 	o.dc = m_dc.grabRef();
 	o.parm.setShowItemInfo = new gOpcode::para::psetShowItemInfo;
 	o.parm.setShowItemInfo->dir = dir;
@@ -745,10 +749,10 @@ void gPainter::sendShowItem(long dir, ePoint point, eSize size)
 }
 void gPainter::setFlush(bool val)
 {
-	if (m_dc->islocked())
-		return;
+	if ( m_dc->islocked() )
+		 return;
 	gOpcode o;
-	o.opcode = gOpcode::setFlush;
+	o.opcode=gOpcode::setFlush;
 	o.dc = m_dc.grabRef();
 	o.parm.setFlush = new gOpcode::para::psetFlush;
 	o.parm.setFlush->enable = val;
@@ -756,10 +760,10 @@ void gPainter::setFlush(bool val)
 }
 void gPainter::setView(eSize size)
 {
-	if (m_dc->islocked())
+	if ( m_dc->islocked() )
 		return;
 	gOpcode o;
-	o.opcode = gOpcode::setView;
+	o.opcode=gOpcode::setView;
 	o.dc = m_dc.grabRef();
 	o.parm.setViewInfo = new gOpcode::para::psetViewInfo;
 	o.parm.setViewInfo->size = size;
@@ -778,7 +782,7 @@ gDC::gDC()
 	m_gradient_fullSize = 0;
 }
 
-gDC::gDC(gPixmap *pixmap) : m_pixmap(pixmap)
+gDC::gDC(gPixmap *pixmap): m_pixmap(pixmap)
 {
 	m_spinner_pic = 0;
 }
@@ -838,6 +842,7 @@ void gDC::exec(const gOpcode *o)
 		break;
 	case gOpcode::renderText:
 	{
+		const char *ellipsis = reinterpret_cast<const char *>(u8"…");
 		ePtr<eTextPara> para = new eTextPara(o->parm.renderText->area);
 		int flags = o->parm.renderText->flags;
 		int border = o->parm.renderText->border;
@@ -853,7 +858,7 @@ void gDC::exec(const gOpcode *o)
 			if (flags & gPainter::RT_WRAP) // Remove wrap
 				flags -= gPainter::RT_WRAP;
 			std::string text = o->parm.renderText->text;
-			text += u8"…";
+			text += ellipsis;
 
 			eTextPara testpara(o->parm.renderText->area);
 			testpara.setFont(m_current_font);
@@ -868,7 +873,7 @@ void gDC::exec(const gOpcode *o)
 				if ((int)text.size() > ns)
 				{
 					text.resize(ns);
-					text += u8"…";
+					text += ellipsis;
 				}
 				if (o->parm.renderText->text)
 					free(o->parm.renderText->text);
@@ -915,7 +920,7 @@ void gDC::exec(const gOpcode *o)
 		}
 
 		para->setBlend(flags & gPainter::RT_BLEND);
-		
+
 		if (markedpos != -1)
 		{
 			int glyphs = para->size();
@@ -1027,7 +1032,7 @@ void gDC::exec(const gOpcode *o)
 	case gOpcode::blit:
 	{
 		gRegion clip;
-		// this code should be checked again but i'm too tired now
+				// this code should be checked again but i'm too tired now
 
 		o->parm.blit->position.moveBy(m_current_offset);
 
@@ -1038,7 +1043,7 @@ void gDC::exec(const gOpcode *o)
 		}
 		else
 			clip = m_current_clip;
-		if (!o->parm.blit->pixmap->surface->transparent)
+		 if (!o->parm.blit->pixmap->surface->transparent)
 			o->parm.blit->flags &=~(gPixmap::blitAlphaTest|gPixmap::blitAlphaBlend);
 		m_pixmap->blit(*o->parm.blit->pixmap, o->parm.blit->position, clip, m_radius, m_radius_edges, o->parm.blit->flags);
 		m_radius = 0;
@@ -1064,10 +1069,10 @@ void gDC::exec(const gOpcode *o)
 	case gOpcode::setPalette:
 		if (o->parm.setPalette->palette->start > m_pixmap->surface->clut.colors)
 			o->parm.setPalette->palette->start = m_pixmap->surface->clut.colors;
-		if (o->parm.setPalette->palette->colors > (m_pixmap->surface->clut.colors - o->parm.setPalette->palette->start))
-			o->parm.setPalette->palette->colors = m_pixmap->surface->clut.colors - o->parm.setPalette->palette->start;
+		if (o->parm.setPalette->palette->colors > (m_pixmap->surface->clut.colors-o->parm.setPalette->palette->start))
+			o->parm.setPalette->palette->colors = m_pixmap->surface->clut.colors-o->parm.setPalette->palette->start;
 		if (o->parm.setPalette->palette->colors)
-			memcpy(static_cast<void *>(m_pixmap->surface->clut.data + o->parm.setPalette->palette->start), o->parm.setPalette->palette->data, o->parm.setPalette->palette->colors * sizeof(gRGB));
+			memcpy(static_cast<void*>(m_pixmap->surface->clut.data+o->parm.setPalette->palette->start), o->parm.setPalette->palette->data, o->parm.setPalette->palette->colors*sizeof(gRGB));
 
 		delete[] o->parm.setPalette->palette->data;
 		delete o->parm.setPalette->palette;
@@ -1110,7 +1115,7 @@ void gDC::exec(const gOpcode *o)
 		if (o->parm.setOffset->rel)
 			m_current_offset += o->parm.setOffset->value;
 		else
-			m_current_offset = o->parm.setOffset->value;
+			m_current_offset  = o->parm.setOffset->value;
 		delete o->parm.setOffset;
 		break;
 	case gOpcode::waitVSync:
@@ -1119,18 +1124,6 @@ void gDC::exec(const gOpcode *o)
 		break;
 	case gOpcode::flush:
 		break;
-	case gOpcode::sendShow:
-		break;
-	case gOpcode::sendHide:
-		break;
-#ifdef USE_LIBVUGLES2
-	case gOpcode::sendShowItem:
-		break;
-	case gOpcode::setFlush:
-		break;
-	case gOpcode::setView:
-		break;
-#endif
 	case gOpcode::sendShow:
 		break;
 	case gOpcode::sendHide:
