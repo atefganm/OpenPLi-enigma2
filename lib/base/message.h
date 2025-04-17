@@ -32,7 +32,6 @@ protected:
 	int getInputFD() const { return fd[1]; }
 	int getOutputFD() const { return fd[0]; }
 };
-
 #ifndef HAVE_OLDE2_API
 class FD
 {
@@ -46,7 +45,6 @@ public:
 	}
 };
 #endif
-
 /**
  * \brief A messagepump with fixed-length packets.
  *
@@ -60,13 +58,13 @@ class eFixedMessagePump: public sigc::trackable
 class eFixedMessagePump: public sigc::trackable, FD
 #endif
 {
+	const char *name;
 	eSingleLock lock;
 	ePtr<eSocketNotifier> sn;
 	std::queue<T> m_queue;
 #ifdef HAVE_OLDE2_API
 	int m_pipe[2];
 #endif
-	const char *name;
 	void do_recv(int)
 	{
 #ifdef HAVE_OLDE2_API
@@ -103,12 +101,23 @@ public:
 		char byte = 0;
 		writeAll(m_pipe[1], &byte, sizeof(byte));
 	}
-	eFixedMessagePump(eMainloop *context, int mt, const char *name) : name(name)
+	eFixedMessagePump(eMainloop *context, int mt)
 	{
 		if (pipe(m_pipe) == -1)
 		{
-			eDebug("[eFixedMessagePump<%s>] failed to create pipe (%m)", name);
+			eDebug("[eFixedMessagePump] failed to create pipe (%m)");
 		}
+		sn = eSocketNotifier::create(context, m_pipe[0], eSocketNotifier::Read, false);
+		CONNECT(sn->activated, eFixedMessagePump<T>::do_recv);
+		sn->start();
+	}
+	eFixedMessagePump(eMainloop *context, int mt, const char *name)
+	{
+		if (pipe(m_pipe) == -1)
+		{
+			eDebug("[eFixedMessagePump] failed to create pipe (%m)");
+		}
+		name = name;
 		sn = eSocketNotifier::create(context, m_pipe[0], eSocketNotifier::Read, false);
 		CONNECT(sn->activated, eFixedMessagePump<T>::do_recv);
 		sn->start();
@@ -123,7 +132,7 @@ public:
 		uint64_t data;
 		if (::read(m_fd, &data, sizeof(data)) <= 0)
 		{
-			eFatal("[eFixedMessagePump] read error %m");
+			eWarning("[eFixedMessagePump<%s>] read error %m", name);
 			return;
 		}
 
@@ -136,7 +145,7 @@ public:
 			if (m_queue.empty())
 			{
 				lock.unlock();
-				eFatal("[eFixedMessagePump] Got event but queue is empty");
+				eWarning("[eFixedMessagePump<%s>] Got event but queue is empty", name);
 				break;
 			}
 			T msg = m_queue.front();
@@ -156,7 +165,7 @@ public:
 	{
 		static const uint64_t data = 1;
 		if (::write(m_fd, &data, sizeof(data)) < 0)
-			eFatal("[eFixedMessagePump<%s>] write error %m", name);
+			eWarning("[eFixedMessagePump<%s>] write error %m", name);
 	}
 public:
 	sigc::signal<void(const T&)> recv_msg;
@@ -167,6 +176,13 @@ public:
 			m_queue.push(msg);
 		}
 		trigger_event();
+	}
+	eFixedMessagePump(eMainloop *context, int mt):
+		FD(eventfd(0, EFD_CLOEXEC)),
+		sn(eSocketNotifier::create(context, m_fd, eSocketNotifier::Read, false))
+	{
+		CONNECT(sn->activated, eFixedMessagePump<T>::do_recv);
+		sn->start();
 	}
 	eFixedMessagePump(eMainloop *context, int mt, const char *name):
 		FD(eventfd(0, EFD_CLOEXEC)),
