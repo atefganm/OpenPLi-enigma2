@@ -19,8 +19,7 @@ dist_pkgdata_DATA = \
 	skin_subtitles.xml \
 	startwizard.xml \
 	timezone.xml \
-	unicable.xml \
-	lcd_picon_default.png
+	unicable.xml
 
 iso-639-3.pck: $(srcdir)/iso-639-3.tab
 	python3 $(srcdir)/convert-iso-639-3.py $< $@
