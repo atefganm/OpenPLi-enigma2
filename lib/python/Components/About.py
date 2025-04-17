@@ -168,6 +168,13 @@ def getCPUInfoString():
 		return _("undefined")
 
 
+def getDVBAPI():
+	if BoxInfo.getItem("OLDE2API"):
+		return _("Old") 
+	else:
+		return _("New")
+
+
 def getDriverInstalledDate():
 	try:
 		from glob import glob
