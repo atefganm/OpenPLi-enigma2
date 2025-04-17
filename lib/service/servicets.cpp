@@ -95,7 +95,7 @@ void TSAudioInfo::addAudio(int pid, std::string lang, std::string desc, int type
 /* eServiceTS                                                       */
 /********************************************************************/
 
-eServiceTS::eServiceTS(const eServiceReference &url): m_pump(eApp, 1, "eServiceTS
+eServiceTS::eServiceTS(const eServiceReference &url): m_pump(eApp, 1, "eServiceTS")
 {
 	eDebug("ServiceTS construct!");
 	m_filename = url.path.c_str();
