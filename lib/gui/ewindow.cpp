@@ -132,6 +132,31 @@ int eWindow::event(int event, void *data, void *data2)
 	return eWidget::event(event, data, data2);
 }
 
+void eWindow::show()
+{
+	if (m_animation_mode & 0x01)
+		m_desktop->sendShow(position(), size());
+	eWidget::show();
+}
+
+void eWindow::hide()
+{
+	if (m_animation_mode & 0x10)
+		m_desktop->sendHide(position(), size());
+	eWidget::hide();
+}
+
+void eWindow::setAnimationMode(int mode)
+{ 
+	/*
+	 * 0x00 = animation off
+	 * 0x01 = show on
+	 * 0x10 = hide on
+	 * 0x11 = animation on
+	 */
+	m_animation_mode = (eWindow::m_has_animation_mode==1) ? mode : 0;
+}
+
 void eWindow::setBackgroundGradient(const gRGB &startcolor, const gRGB &midcolor, const gRGB &endcolor, uint8_t direction, bool alphablend)
 {
 	/* set background gradient for child, too */
