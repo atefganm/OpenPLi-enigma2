@@ -14,6 +14,7 @@ from Components.Pixmap import Pixmap
 from Components.ServiceList import ServiceList, refreshServiceList
 from Components.ActionMap import NumberActionMap, ActionMap, HelpableActionMap, HelpableNumberActionMap
 from Components.MenuList import MenuList
+from Components.SystemInfo import SystemInfo
 from Components.ServiceEventTracker import ServiceEventTracker, InfoBarBase
 profile("ChannelSelection.py 1")
 from Screens.EpgSelection import EPGSelection
@@ -627,7 +628,13 @@ class ChannelContextMenu(Screen):
 		if ref and root or (self.PiPAvailable and not self.csel.dopipzap and newservice and newservice.valid() and Components.ParentalControl.parentalControl.isServicePlayable(newservice, boundFunction(self.showServiceInPiP, root=currentBouquet), self.session)):
 			if hasattr(self.session, 'pipshown') and self.session.pipshown and hasattr(self.session, 'pip'):
 				del self.session.pip
+			if SystemInfo["LCDMiniTVPiP"] and int(config.lcd.minitvpipmode.value) >= 1:
+				print("[LCDMiniTV] disable PIP")
+				f = open("/proc/stb/lcd/mode", "w")
+				f.write(config.lcd.minitvmode.value)
+				f.close()
 			self.session.pip = self.session.instantiateDialog(PictureInPicture)
+			self.session.pip.setAnimationMode(0)
 			self.session.pip.show()
 			if self.session.pip.playService(newservice):
 				self.session.pipshown = True

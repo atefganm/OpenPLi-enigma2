@@ -6,6 +6,10 @@ SUBDIRS = SoftwareManager PositionerSetup Satfinder \
 	CableScan FastScan OSDPositionSetup OSD3DSetup HdmiCEC VideoClippingSetup \
 	VideoEnhancement WirelessLan NetworkWizard FastChannelChange
 
+if HAVE_LIBVUGLES2
+SUBDIRS += AnimationSetup
+endif
+
 if HAVE_TEMPFANCONTROL
 SUBDIRS += TempFanControl
 endif

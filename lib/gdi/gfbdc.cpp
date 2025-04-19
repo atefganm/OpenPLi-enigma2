@@ -9,6 +9,10 @@
 #endif
 #include <time.h>
 
+#ifdef USE_LIBVUGLES2
+#include <vuplus_gles.h>
+#endif
+
 #ifdef CONFIG_ION
 extern void bcm_accel_blit(
 		int src_addr, int src_width, int src_height, int src_stride, int src_format,
@@ -158,8 +162,15 @@ void gFBDC::exec(const gOpcode *o)
 		break;
 	}
 	case gOpcode::flush:
+#ifdef USE_LIBVUGLES2
+		if (gles_is_animation())
+			gles_do_animation();
+		else
+			fb->blit();
+		gles_flush();
+#else
 		fb->blit();
-
+#endif
 #ifdef CONFIG_ION
 		if (surface_back.data_phys)
 		{

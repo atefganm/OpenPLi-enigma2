@@ -269,6 +269,15 @@ if test `echo "$BOXTYPE" | cut -b 1-2` == "vu"; then
 	AC_DEFINE(FORCE_ADVANCED_REMOTE, 1,[define to fixup the input device identification when the remote control is actually an 'advanced' remote (with play/forward/rewind keys)])
 fi
 
+AC_ARG_WITH(libvugles2,
+	AS_HELP_STRING([--with-libvugles2],[use libvugles2, yes or no]),
+	[with_libvugles2=$withval],[with_libvugles2=no])
+if test "$with_libvugles2" = "yes"; then
+	PKG_CHECK_MODULES(LIBVUGLES2, [libvugles2])
+	GLES_CFLAGS="-DUSE_LIBVUGLES2"
+fi
+AM_CONDITIONAL(HAVE_LIBVUGLES2, test "$with_libvugles2" = "yes")
+
 AC_ARG_WITH(libsdl,
 	AS_HELP_STRING([--with-libsdl],[use libsdl, yes or no]),
 	[with_libsdl=$withval],[with_libsdl=no])
@@ -443,7 +452,7 @@ CXXFLAGS="$CXXFLAGS -Wall -Wextra \
 	-Wno-error=shadow -Wno-error=cast-qual \
 	-Wno-error=aggregate-return -Wno-error=missing-field-initializers \
 	-Wno-error=packed -Wno-error=vla -Wno-error=clobbered -Wno-error=unused-parameter \
-	$BASE_CFLAGS $ENIGMA2_CFLAGS $PTHREAD_CFLAGS $OPENMP_CFLAGS $ALSA_CFLAGS"
+	$BASE_CFLAGS $ENIGMA2_CFLAGS $PTHREAD_CFLAGS $OPENMP_CFLAGS $ALSA_CFLAGS $GLES_CFLAGS"
 
 ARFLAGS="cr"
 AC_SUBST(ARFLAGS)
@@ -494,6 +503,7 @@ lib/python/Components/Renderer/Makefile
 lib/python/Components/Sources/Makefile
 lib/python/Screens/Makefile
 lib/python/Plugins/Makefile
+lib/python/Plugins/SystemPlugins/AnimationSetup/Makefile
 lib/python/Plugins/SystemPlugins/CableScan/Makefile
 lib/python/Plugins/SystemPlugins/FastScan/Makefile
 lib/python/Plugins/SystemPlugins/OSDPositionSetup/Makefile
