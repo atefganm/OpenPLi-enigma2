@@ -388,7 +388,6 @@ int eWidget::event(int event, void *data, void *data2)
 			if (m_have_background_color)
 				painter.setBackgroundColor(m_background_color);
 			const int r = getCornerRadius();
-
 			if (r || m_gradient_set)
 			{
 				if (r)
@@ -446,7 +445,7 @@ int eWidget::event(int event, void *data, void *data2)
 		m_size = *static_cast<eSize *>(data);
 		break;
 	case evtChangedSize:
-		m_clip_region = gRegion(eRect(ePoint(0, 0), m_size))
+		m_clip_region = gRegion(eRect(ePoint(0, 0), m_size));
 		break;
 	case evtParentChangedPosition:
 		for (ePtrList<eWidget>::iterator i(m_childs.begin()); i != m_childs.end(); ++i)
