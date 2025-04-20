@@ -17,13 +17,20 @@
 #include <lib/base/cfile.h>
 #endif
 
-#ifdef CONFIG_ION
+#if defined(CONFIG_ION) || defined(CONFIG_HISILICON_FB)
+#include <lib/gdi/grc.h>
+
 extern void bcm_accel_blit(
 		int src_addr, int src_width, int src_height, int src_stride, int src_format,
 		int dst_addr, int dst_width, int dst_height, int dst_stride,
 		int src_x, int src_y, int width, int height,
 		int dst_x, int dst_y, int dwidth, int dheight,
-int pal_addr, int flags);
+		int pal_addr, int flags);
+#endif
+
+#ifdef HAVE_HISILICON_ACCEL
+extern void  dinobot_accel_register(void *p1,void *p2);
+extern void  dinibot_accel_notify(void);
 #endif
 
 gFBDC::gFBDC()
@@ -196,6 +203,23 @@ void gFBDC::exec(const gOpcode *o)
 				0, 0);
 		}
 #endif
+#if defined(CONFIG_HISILICON_FB)
+		if(islocked()==0)
+		{
+			bcm_accel_blit(
+				surface.data_phys, surface.x, surface.y, surface.stride, 0,
+				surface_back.data_phys, surface_back.x, surface_back.y, surface_back.stride,
+				0, 0, surface.x, surface.y,
+				0, 0, surface.x, surface.y,
+				0, 0);
+		}
+#endif
+#ifdef HAVE_HISILICON_ACCEL
+		dinibot_accel_notify();
+#endif
+		break;
+	case gOpcode::sendShow:
+	{
 #ifdef HAVE_OSDANIMATION
 		CFile::writeIntHex("/proc/stb/fb/animation_mode", 0x01);
 #endif
@@ -311,6 +335,9 @@ void gFBDC::setResolution(int xres, int yres, int bpp)
 #else
 	eDebug("[gFBDC] resolution: %d x %d x %d (stride: %d) pages: %d", surface.x, surface.y, surface.bpp, fb->Stride(), fb->getNumPages());
 #endif
+#ifdef HAVE_HISILICON_ACCEL
+	dinobot_accel_register(&surface,&surface_back);
+#endif
 	if (!surface.clut.data)
 	{
 		surface.clut.colors = 256;
@@ -319,6 +346,15 @@ void gFBDC::setResolution(int xres, int yres, int bpp)
 	}
 
 	surface_back.clut = surface.clut;
+
+#if defined(CONFIG_HISILICON_FB)
+	if(islocked()==0)
+	{
+		gUnmanagedSurface s(surface);
+		surface = surface_back;
+		surface_back = s;
+	}
+#endif
 
 	m_pixmap = new gPixmap(&surface);
 #ifdef CONFIG_ION
