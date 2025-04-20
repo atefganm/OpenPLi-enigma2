@@ -206,6 +206,7 @@ typedef long time_t;
 %include <lib/gdi/fb.h>
 %include <lib/gdi/font.h>
 %include <lib/gdi/gpixmap.h>
+%include <lib/gdi/gfbdc.h>
 %include <lib/gdi/gmaindc.h>
 %include <lib/gdi/epoint.h>
 %include <lib/gdi/erect.h>
@@ -479,8 +480,11 @@ extern void dump_malloc_stats(void);
 extern void pauseInit(void);
 extern void resumeInit(void);
 extern int getE2Flags();
+#ifndef HAVE_OSDANIMATION
 extern void setAnimation_current(int a);
 extern void setAnimation_speed(int speed);
+extern void setAnimation_current_listbox(int a);
+#endif
 %}
 
 extern void addFont(const char *filename, const char *alias, int scale_factor, int is_replacement, int renderflags = 0);
@@ -494,8 +498,11 @@ extern void dump_malloc_stats(void);
 extern void pauseInit(void);
 extern void resumeInit(void);
 extern int getE2Flags();
+#ifndef HAVE_OSDANIMATION
 extern void setAnimation_current(int a);
 extern void setAnimation_speed(int speed);
+extern void setAnimation_current_listbox(int a);
+#endif
 
 %include <lib/python/python_console.i>
 %include <lib/python/python_base.i>
