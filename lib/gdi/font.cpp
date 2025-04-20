@@ -32,7 +32,7 @@
 
 fontRenderClass *fontRenderClass::instance;
 
-static pthread_mutex_t ftlock=
+static pthread_mutex_t ftlock= 
 #ifdef __GLIBC__
 	PTHREAD_ADAPTIVE_MUTEX_INITIALIZER_NP;
 #else
@@ -245,7 +245,7 @@ float fontRenderClass::getLineHeight(const gFont& font)
 	singleLock s(ftlock);
 	FT_Face current_face;
 	if ((FTC_Manager_LookupFace(cacheManager, fnt->scaler.face_id, &current_face) < 0) ||
-	    (FTC_Manager_LookupSize(cacheManager, &fnt->scaler, &fnt->size) < 0))
+		(FTC_Manager_LookupSize(cacheManager, &fnt->scaler, &fnt->size) < 0))
 	{
 		eDebug("[Font] FTC_Manager_Lookup_Size failed!");
 		return 0;
@@ -618,11 +618,11 @@ void eTextPara::setFont(Font *fnt, Font *replacement, Font *fallback)
 	if (replacement_font)
 	{
 		if ((FTC_Manager_LookupFace(fontRenderClass::instance->cacheManager,
-					    replacement_font->scaler.face_id,
-					    &replacement_face) < 0) ||
-		    (FTC_Manager_LookupSize(fontRenderClass::instance->cacheManager,
-					    &replacement_font->scaler,
-					    &replacement_font->size) < 0))
+						replacement_font->scaler.face_id,
+						&replacement_face) < 0) ||
+			(FTC_Manager_LookupSize(fontRenderClass::instance->cacheManager,
+						&replacement_font->scaler,
+						&replacement_font->size) < 0))
 		{
 			eDebug("[eTextPara] setFont: FTC_Manager_Lookup_Size replacement_font failed!");
 			return;
@@ -631,11 +631,11 @@ void eTextPara::setFont(Font *fnt, Font *replacement, Font *fallback)
 	if (current_font)
 	{
 		if ((FTC_Manager_LookupFace(fontRenderClass::instance->cacheManager,
-					    current_font->scaler.face_id,
-					    &current_face) < 0) ||
-		    (FTC_Manager_LookupSize(fontRenderClass::instance->cacheManager,
-					    &current_font->scaler,
-					    &current_font->size) < 0))
+						current_font->scaler.face_id,
+						&current_face) < 0) ||
+			(FTC_Manager_LookupSize(fontRenderClass::instance->cacheManager,
+						&current_font->scaler,
+						&current_font->size) < 0))
 		{
 			eDebug("[eTextPara] setFont: FTC_Manager_Lookup_Size current_font failed!");
 			return;
@@ -644,11 +644,11 @@ void eTextPara::setFont(Font *fnt, Font *replacement, Font *fallback)
 	if (fallback_font)
 	{
 		if ((FTC_Manager_LookupFace(fontRenderClass::instance->cacheManager,
-					    fallback_font->scaler.face_id,
-					    &fallback_face) < 0) ||
-		    (FTC_Manager_LookupSize(fontRenderClass::instance->cacheManager,
-					    &fallback_font->scaler,
-					    &fallback_font->size) < 0))
+						fallback_font->scaler.face_id,
+						&fallback_face) < 0) ||
+			(FTC_Manager_LookupSize(fontRenderClass::instance->cacheManager,
+						&fallback_font->scaler,
+						&fallback_font->size) < 0))
 		{
 			eDebug("[eTextPara] FTC_Manager_Lookup_Size failed!");
 			return;
@@ -671,7 +671,7 @@ int eTextPara::renderString(const char *string, int rflags, int border, int mark
 	if ((FTC_Manager_LookupFace(fontRenderClass::instance->cacheManager,
 				current_font->scaler.face_id,
 				&current_face) < 0) ||
-	    (FTC_Manager_LookupSize(fontRenderClass::instance->cacheManager,
+		(FTC_Manager_LookupSize(fontRenderClass::instance->cacheManager,
 				&current_font->scaler,
 				&current_font->size) < 0))
 	{
@@ -791,7 +791,6 @@ int eTextPara::renderString(const char *string, int rflags, int border, int mark
 
 		if (!(rflags&RS_DIRECT))
 		{
-
 			switch (chr)
 			{
 			case '\\':
@@ -949,11 +948,11 @@ void eTextPara::blit(gDC &dc, const ePoint &offset, const gRGB &cbackground, con
 		return;
 
 	if ((FTC_Manager_LookupFace(fontRenderClass::instance->cacheManager,
-				    current_font->scaler.face_id,
-				    &current_face) < 0) ||
-	    (FTC_Manager_LookupSize(fontRenderClass::instance->cacheManager,
-				    &current_font->scaler,
-				    &current_font->size) < 0))
+					current_font->scaler.face_id,
+					&current_face) < 0) ||
+		(FTC_Manager_LookupSize(fontRenderClass::instance->cacheManager,
+					&current_font->scaler,
+					&current_font->size) < 0))
 	{
 		eDebug("[eTextPara] FTC_Manager_Lookup_Size failed!");
 		return;
@@ -965,7 +964,7 @@ void eTextPara::blit(gDC &dc, const ePoint &offset, const gRGB &cbackground, con
 	gRGB currentforeground = foreground;
 	const gRGB background = (m_blend && surface->bpp == 32) ? gRGB(currentforeground.r, currentforeground.g, currentforeground.b, 200) : cbackground;
 
-	int opcode = -1;
+	register int opcode = -1;
 
 	__u32 lookup32_normal[16];
 	__u32 lookup32_invert[16];
@@ -1131,7 +1130,7 @@ void eTextPara::blit(gDC &dc, const ePoint &offset, const gRGB &cbackground, con
 			int rx = rxbase, ry = rybase;
 			__u8 *d = dbase;
 			__u8 *s = sbase;
-			int sx = sxbase;
+			register int sx = sxbase;
 			int sy = sybase;
 			if ((sy+ry) >= clip.rects[c].bottom())
 				sy = clip.rects[c].bottom()-ry;
@@ -1160,15 +1159,15 @@ void eTextPara::blit(gDC &dc, const ePoint &offset, const gRGB &cbackground, con
 				{
 				case 0: 		// 4bit lookup to 8bit
 					{
-						int extra_buffer_stride = buffer_stride - sx;
-						__u8 *td=d;
+						register int extra_buffer_stride = buffer_stride - sx;
+						register __u8 *td=d;
 						for (int ay = 0; ay < sy; ay++)
 						{
-							int ax;
+							register int ax;
 
 							for (ax=0; ax<sx; ax++)
 							{
-								int b=(*s++)>>4;
+								register int b=(*s++)>>4;
 								if(b)
 									*td=lookup8[b];
 								++td;
@@ -1180,14 +1179,14 @@ void eTextPara::blit(gDC &dc, const ePoint &offset, const gRGB &cbackground, con
 					break;
 				case 1:	// 8bit direct
 					{
-						int extra_buffer_stride = buffer_stride - sx;
-						__u8 *td=d;
+						register int extra_buffer_stride = buffer_stride - sx;
+						register __u8 *td=d;
 						for (int ay = 0; ay < sy; ay++)
 						{
-							int ax;
+							register int ax;
 							for (ax=0; ax<sx; ax++)
 							{
-								int b=*s++;
+								register int b=*s++;
 								*td++^=b;
 							}
 							s += extra_source_stride;
@@ -1196,34 +1195,34 @@ void eTextPara::blit(gDC &dc, const ePoint &offset, const gRGB &cbackground, con
 					}
 					break;
 				case 2: // 16bit
-                                        {
-                                        int extra_buffer_stride = (buffer_stride >> 1) - sx;
-                                        __u16 *td = (__u16*)d;
-                                        for (int ay = 0; ay != sy; ay++)
-                                        {
-                                                int ax;
-                                                for (ax = 0; ax != sx; ax++)
-                                                {
-                                                        int b = (*s++) >> 4;
+					{
+						int extra_buffer_stride = (buffer_stride >> 1) - sx;
+						register __u16 *td = (__u16*)d;
+						for (int ay = 0; ay != sy; ay++)
+						{
+								register int ax;
+								for (ax = 0; ax != sx; ax++)
+								{
+									register int b = (*s++) >> 4;
 									if (b)
 										*td = lookup16[b];
-                                                        ++td;
-                                                }
-                                                s += extra_source_stride;
-                                                td += extra_buffer_stride;
-                                        }
-                                        }
-                                        break;
+									++td;
+								}
+								s += extra_source_stride;
+								td += extra_buffer_stride;
+						}
+					}
+					break;
 				case 3: // 32bit
 					{
-						int extra_buffer_stride = (buffer_stride >> 2) - sx;
-						__u32 *td=(__u32*)d;
+						register int extra_buffer_stride = (buffer_stride >> 2) - sx;
+						register __u32 *td=(__u32*)d;
 						for (int ay = 0; ay < sy; ay++)
 						{
-							int ax;
+							register int ax;
 							for (ax=0; ax<sx; ax++)
 							{
-								int b=(*s++)>>4;
+								register int b=(*s++)>>4;
 								if(b)
 									*td=lookup32[b];
 								++td;
@@ -1235,14 +1234,14 @@ void eTextPara::blit(gDC &dc, const ePoint &offset, const gRGB &cbackground, con
 					break;
 				case 4: // 32-bit blend
 					{
-						int extra_buffer_stride = (buffer_stride >> 2) - sx;
-						__u32 *td = (__u32 *)d;
+						register int extra_buffer_stride = (buffer_stride >> 2) - sx;
+						register __u32 *td = (__u32 *)d;
 						for (int ay = 0; ay < sy; ay++)
 						{
-							int ax;
+							register int ax;
 							for (ax = 0; ax < sx; ax++)
 							{
-								int b = (*s++) >> 4;
+								register int b = (*s++) >> 4;
 								if (b)
 								{
 									// unsigned char frame_a = (*td) >> 24 & 0xFF;
