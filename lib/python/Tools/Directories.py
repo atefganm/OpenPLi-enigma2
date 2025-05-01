@@ -167,7 +167,6 @@ def resolveFilename(scope, base="", path_prefix=None):
 				os.path.join(scopeGUISkin, "skin_default"),
 				scopeGUISkin
 			)
-			print('     &&&&>     ', skinResolveList)
 		path = itemExists(skinResolveList, base)
 	elif scope == SCOPE_LCDSKIN:
 		global lcdskinResolveList
