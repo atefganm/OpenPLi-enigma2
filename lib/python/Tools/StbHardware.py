@@ -1,27 +1,31 @@
 from os import path
 from fcntl import ioctl
 from struct import pack, unpack
+from boxbranding import getBoxType, getBrandOEM
 from time import time, localtime, gmtime
-from enigma import getBoxType
+from Tools.HardwareInfo import HardwareInfo
+from Tools.Directories import fileReadLine, fileWriteLine
+
+MODULE_NAME = __name__.split(".")[-1]
+wasTimerWakeup = None
 
 
 def getFPVersion():
-	ret = None
+	version = None
 	try:
-		if getBoxType() in ('dm7080','dm820','dm520','dm525','dm900','dm920'):
-			ret = open("/proc/stb/fp/version", "r").read()
+		if getBrandOEM() == "blackbox" and isfile("/proc/stb/info/micomver"):
+			version = fileReadLine("/proc/stb/info/micomver", source=MODULE_NAME)
+		elif getBoxType() in ('dm7080', 'dm820', 'dm520', 'dm525', 'dm900', 'dm920'):
+			version = open("/proc/stb/fp/version", "r").read()
 		else:
-			ret = long(open("/proc/stb/fp/version", "r").read())
+			version = int(open("/proc/stb/fp/version", "r").read())
 	except IOError:
 		try:
-			fp = open("/dev/dbox/fp0")
-			ret = ioctl(fp.fileno(), 0)
-		except IOError:
-			try:
-				ret = open("/sys/firmware/devicetree/base/bolt/tag", "r").read().rstrip("\0")
-			except:
-				print("getFPVersion failed!")
-	return ret
+			with open("/dev/dbox/fp0") as fd:
+				version = ioctl(fd.fileno(), 0)
+		except (IOError, OSError) as err:
+			print("[StbHardware] Error %d: Unable to access '/dev/dbox/fp0', getFPVersion failed!  (%s)" % (err.errno, err.strerror))
+	return version
 
 
 def setFPWakeuptime(wutime):
@@ -61,7 +65,7 @@ def setRTCtime(wutime):
 def getFPWakeuptime():
 	ret = 0
 	try:
-		ret = open("/proc/stb/fp/wakeup_time", "r").read()
+		ret = int(open("/proc/stb/fp/wakeup_time", "r").read())
 	except IOError:
 		try:
 			fp = open("/dev/dbox/fp0")
