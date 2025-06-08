@@ -122,6 +122,7 @@ dist_install_DATA = \
 	scan-t.png \
 	selectioncross.png \
 	shuffle.png \
+    SwapManager.png \
 	timer_done.svg  timer_prep.svg  timer_rep.svg   timer_zap.svg \
 	timer_off.svg   timer_rec.svg   timer_wait.svg   timer_autotimer.svg \
 	trashcan.png \

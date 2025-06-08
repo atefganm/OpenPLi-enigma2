@@ -67,6 +67,7 @@
 						<item key="harddisk_setup" level="0" text="Hard disk setup"><setup id="harddisk"/></item>
 						<item key="harddisk_init" level="0" text="Initialization"><screen module="HarddiskSetup" screen="HarddiskSelection"/></item>
 						<item key="harddisk_check" level="0" text="Filesystem check"><screen module="HarddiskSetup" screen="HarddiskFsckSelection"/></item>
+						<item key="swap_manager" level="2" text="Swap Manager" weight="30"><screen module="SwapManager" screen="Swap" /></item>
 					</menu>
 					<item key="network_setup" level="0" text="Network"><screen module="NetworkSetup" screen="NetworkAdapterSelection"/></item>
 					<item key="input_device_setup" level="1" text="Input devices"><screen module="InputDeviceSetup" screen="InputDeviceSelection"/></item>

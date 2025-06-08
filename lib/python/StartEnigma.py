@@ -487,6 +487,9 @@ def runScreenTest():
 	profile("Init:PowerKey")
 	power = PowerKey(session)
 
+	from Screens.SwapManager import SwapAutostart
+	SwapAutostart()
+
 	# we need session.scart to access it from within menu.xml
 	session.scart = AutoScartControl(session)
 
