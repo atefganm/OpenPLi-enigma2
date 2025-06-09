@@ -93,9 +93,9 @@ class Swap(Screen):
 			<ePixmap pixmap="skin_default/buttons/red.png" position="0,0" size="140,40" alphatest="on" />
 			<ePixmap pixmap="skin_default/buttons/green.png" position="140,0" size="140,40" alphatest="on" />
 			<ePixmap pixmap="skin_default/buttons/yellow.png" position="280,0" size="140,40" alphatest="on" />
-			<widget name="key_red" position="0,0" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#9f1313" transparent="1" />
-			<widget name="key_green" position="140,0" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#1f771f" transparent="1" />
-			<widget name="key_yellow" position="280,0" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#a08500" transparent="1" />
+			<widget name="key_red" position="0,0" zPosition="1" size="140,40" font="Regular;16" halign="center" valign="center" backgroundColor="#9f1313" transparent="1" />
+			<widget name="key_green" position="140,0" zPosition="1" size="140,40" font="Regular;16" halign="center" valign="center" backgroundColor="#1f771f" transparent="1" />
+			<widget name="key_yellow" position="280,0" zPosition="1" size="140,40" font="Regular;16" halign="center" valign="center" backgroundColor="#a08500" transparent="1" />
 			<widget name="autostart_off" position="10,50" zPosition="1" pixmap="skin_default/icons/lock_off.png" size="32,32" alphatest="on" />
 			<widget name="autostart_on" position="10,50" zPosition="2" pixmap="skin_default/icons/lock_on.png" size="32,32" alphatest="on" />
 			<widget name="lab1" position="50,50" size="360,30" font="Regular;20" valign="center" transparent="1"/>
@@ -113,9 +113,9 @@ class Swap(Screen):
 			<eLabel position="85,5" size="250,10" foregroundColor="#00ff2525" backgroundColor="#00ff2525" transparent="0"/>
 			<eLabel position="500,5" size="250,10" foregroundColor="#00389416" backgroundColor="#00389416" transparent="0"/>
 			<eLabel position="905,5" size="250,10" foregroundColor="#00bab329" backgroundColor="#00bab329" transparent="0"/>
-			<widget name="key_red" position="85,5" zPosition="1" size="250,60" font="Regular;35" halign="center" valign="center" backgroundColor="#ff9f1313" transparent="1"/>
-			<widget name="key_green" position="500,5" zPosition="1" size="250,60" font="Regular;35" halign="center" valign="center" backgroundColor="#ff1f771f" transparent="1"/>
-			<widget name="key_yellow" position="905,5" zPosition="1" size="250,60" font="Regular;35" halign="center" valign="center" backgroundColor="#ffa08500" transparent="1"/>
+			<widget name="key_red" position="85,5" zPosition="1" size="250,60" font="Regular;30" halign="center" valign="center" backgroundColor="#ff9f1313" transparent="1"/>
+			<widget name="key_green" position="500,5" zPosition="1" size="250,60" font="Regular;30" halign="center" valign="center" backgroundColor="#ff1f771f" transparent="1"/>
+			<widget name="key_yellow" position="905,5" zPosition="1" size="250,60" font="Regular;30" halign="center" valign="center" backgroundColor="#ffa08500" transparent="1"/>
 			<widget name="autostart_off" position="20,123" zPosition="1" pixmap="skin_default/icons/lock_off.png" size="32,32" alphatest="on" />
 			<widget name="autostart_on" position="20,123" zPosition="2" pixmap="skin_default/icons/lock_on.png" size="32,32" alphatest="on" />
 			<widget name="lab1" position="75,118" size="848,63" font="Regular;35" valign="center" transparent="1"/>
@@ -301,7 +301,7 @@ class Swap(Screen):
 			self["autostart_on"].show()
 			self["key_yellow"].setText(_("Disable Autostart"))
 		else:
-			config.usage.swapautostart.value = False
+			config.usage.swapautostart.setValue(False)
 			config.usage.swapautostart.save()
 			configfile.save()
 			self["autostart_on"].hide()
