@@ -479,6 +479,7 @@ extern const char *getBoxType();
 extern void dump_malloc_stats(void);
 extern void pauseInit(void);
 extern void resumeInit(void);
+extern bool checkLogin(const char *user, const char *pwd);
 extern int getE2Flags();
 #ifndef HAVE_OSDANIMATION
 extern void setAnimation_current(int a);
@@ -496,6 +497,7 @@ extern const char *getBoxType();
 extern void dump_malloc_stats(void);
 extern void pauseInit(void);
 extern void resumeInit(void);
+extern bool checkLogin(const char *user, const char *pwd);
 extern int getE2Flags();
 #ifndef HAVE_OSDANIMATION
 extern void setAnimation_current(int a);
