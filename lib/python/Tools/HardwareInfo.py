@@ -1,4 +1,5 @@
 from Tools.Directories import SCOPE_SKIN, resolveFilename
+from Components.SystemInfo import BoxInfo
 
 hw_info = None
 
@@ -61,6 +62,8 @@ class HardwareInfo:
 		self.device_model = self.device_model or self.device_name
 		self.device_hw = self.device_model
 		self.machine_name = self.device_model
+		self.machinebuild_name = BoxInfo.getItem("machinebuild") # This contains the value for compatibility with OE-A
+		self.device_hw = BoxInfo.getItem("displaymodel")
 
 		# custom overrides for specific receivers
 		if self.device_model.startswith(("et9", "et4", "et5", "et6", "et7")):
@@ -103,6 +106,9 @@ class HardwareInfo:
 
 	def get_machine_name(self):
 		return hw_info.machine_name
+
+	def get_machinebuild_name(self):
+		return hw_info.machinebuild_name
 
 	def has_hdmi(self):
 		return hw_info.device_hdmi
