@@ -6,7 +6,7 @@ from ast import literal_eval
 from os.path import exists as fileAccess, isdir, isfile, join
 from re import findall
 from subprocess import PIPE, Popen
-from enigma import Misc_Options, eDVBCIInterfaces, eDVBResourceManager, eGetEnigmaDebugLvl
+from enigma import Misc_Options, eDVBCIInterfaces, eDVBResourceManager, eGetEnigmaDebugLvl, eDVBCSAEngine
 
 from Components.RcModel import rc_model
 from Tools.Directories import SCOPE_PLUGINS, SCOPE_LIBDIR, SCOPE_SKIN, fileCheck, fileReadLine, fileReadLines, resolveFilename, isPluginInstalled, fileExists, fileHas, fileReadLine, pathExists
@@ -212,6 +212,7 @@ def setBoxInfoItems():
 		BoxInfo.setItem("CI%dSupportsHighBitrates" % cislot, fileCheck("/proc/stb/tsmux/ci%d_tsclk" % cislot))
 		BoxInfo.setItem("CI%dRelevantPidsRoutingSupport" % cislot, fileCheck("/proc/stb/tsmux/ci%d_relevant_pids_routing" % cislot))
 	BoxInfo.setItem("HasSoftcamInstalled", hassoftcaminstalled())
+	BoxInfo.setItem("HasSoftCSA", eDVBCSAEngine.isAvailable())
 	BoxInfo.setItem("NumVideoDecoders", getNumVideoDecoders())
 	BoxInfo.setItem("PIPAvailable", BoxInfo.getItem("NumVideoDecoders") > 1)
 	BoxInfo.setItem("CanMeasureFrontendInputPower", eDVBResourceManager.getInstance().canMeasureFrontendInputPower())
