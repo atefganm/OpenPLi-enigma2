@@ -87,7 +87,6 @@ void eDVBServiceRecord::serviceEvent(int event)
 			else
 				doRecord();
 		}
- 		m_ev
 		m_event((iRecordableService*)this, evNewProgramInfo);
 		break;
 	}
