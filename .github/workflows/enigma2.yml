@@ -2,11 +2,11 @@ name: Enigma2 CI
 
 on:
   push:
-    branches: [ scarthgap ]
+    branches: [ multiboot, scarthgap ]
     paths-ignore:
       - '**/README'
   pull_request:
-    branches: [ scarthgap ]
+    branches: [ multiboot, scarthgap ]
     paths-ignore:
       - '**/README'
 

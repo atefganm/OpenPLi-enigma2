@@ -13,7 +13,7 @@ commit_files() {
   rm -rf *.pyc
   rm -rf *.pyo
   rm -rf *.mo
-  git checkout scarthgap
+  git checkout multiboot
   ./CI/chmod.sh
   ./CI/dos2unix.sh
   ./CI/PEP8.sh
@@ -21,7 +21,7 @@ commit_files() {
 
 upload_files() {
   git remote add upstream https://${GITHUB_TOKEN}@github.com/atefganm/OpenPLi-enigma2.git > /dev/null 2>&1
-  git push --quiet upstream scarthgap || echo "failed to push with error $?"
+  git push --quiet upstream multiboot || echo "failed to push with error $?"
 }
 
 setup_git
