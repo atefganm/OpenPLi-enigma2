@@ -648,12 +648,6 @@ def InitUsageConfig():
 
 	config.usage.historymode = ConfigSelection(default='1', choices=[('0', _('Just zap')), ('1', _('Show menu'))])
 
-	if not BoxInfo.getItem("ZapMode") and exists("/proc/stb/info/model"):
-		def setZapmodeDM(el):
-			print('[UsageConfig] >>> zapmodeDM')
-		config.misc.zapmodeDM = ConfigSelection(default="black", choices=[("black", _("Black screen")), ("hold", _("Hold screen"))])
-		config.misc.zapmodeDM.addNotifier(setZapmodeDM, immediate_feedback = False)
-
 	if BoxInfo.getItem("VFD_scroll_repeats"):
 		def scroll_repeats(el):
 			open(BoxInfo.getItem("VFD_scroll_repeats"), "w").write(el.value)
