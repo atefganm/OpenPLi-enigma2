@@ -624,7 +624,7 @@ class MultibootSelection(SelectImage):
 				else:
 					shutil.copyfile(startupfile, os.path.join(self.tmp_dir, "STARTUP"))
 			else:
-				model = HardwareInfo().get_machinebuild_name()
+				model = HardwareInfo().get_machine_name()
 				if slot[1] == 1:
 					startupFileContents = "boot emmcflash0.kernel%s 'root=/dev/mmcblk0p%s rw rootwait %s_4.boxmode=1'\n" % (slot[0], slot[0] * 2 + 1, model)
 				else:
@@ -681,7 +681,7 @@ class KexecInit(Screen):
 
 	def RootInitEnd(self, *args, **kwargs):
 		from Screens.Standby import TryQuitMainloop
-		model = HardwareInfo().get_machinebuild_name()
+		model = HardwareInfo().get_machine_name()
 		for usbslot in range(1, 4):
 			if pathExists("/media/hdd/%s/linuxrootfs%s" % (model, usbslot)):
 				Console().ePopen("cp -R /media/hdd/%s/linuxrootfs%s . /" % (model, usbslot))
