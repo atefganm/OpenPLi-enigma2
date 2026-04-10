@@ -3098,18 +3098,15 @@ class InfoBarSubserviceSelection:
 					selection = 0
 				self.bouquets = self.servicelist and self.servicelist.getBouquetList()
 				tlist = None
-				quickzap = ("--", "")
-				if serviceRef.toString() in [x[1] for x in subservices]:
-					quickzap = (_("Quick zap"), "quickzap", subservices)
 				if self.bouquets and len(self.bouquets):
 					keys = ["red", "blue", "", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
 					call_func_title = _("Add to favourites")
 					if config.usage.multibouquet.value:
 						call_func_title = _("Add to bouquet")
-						tlist = [quickzap, (call_func_title, "CALLFUNC", self.addSubserviceToBouquetCallback), ("--", "")] + subservices
+						tlist = [(_("Quick zap"), "quickzap", subservices), (call_func_title, "CALLFUNC", self.addSubserviceToBouquetCallback), ("--", "")] + subservices
 					selection += 3
 				else:
-					tlist = [quickzap, ("--", "")] + subservices
+					tlist = [(_("Quick zap"), "quickzap", subservices), ("--", "")] + subservices
 					keys = ["red", "", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
 					selection += 2
 				if tlist:
