@@ -1,6 +1,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <stdint.h>
+#include <fcntl.h>
 
 #include <dvbsi++/ca_descriptor.h>
 #include <dvbsi++/ca_program_map_section.h>
@@ -379,13 +380,30 @@ static bool isProtocol3CapableClient(int socket_fd)
 	}
 
 	char exe_path[256];
-	char proc_path[64];
-	snprintf(proc_path, sizeof(proc_path), "/proc/%d/exe", cred.pid);
-	ssize_t n = readlink(proc_path, exe_path, sizeof(exe_path) - 1);
+	std::string proc_path = "/proc/" + std::to_string(cred.pid) + "/exe";
+	ssize_t n = readlink(proc_path.c_str(), exe_path, sizeof(exe_path) - 1);
 	if (n <= 0)
 	{
-		eDebug("[eDVBCAHandler] readlink(%s) failed: %m, treating as legacy client", proc_path);
-		return false;
+		// Some kernels (observed on dm520) do not implement readlink on
+		// /proc/PID/exe. Fall back to /proc/PID/comm which exposes the
+		// process name (truncated to TASK_COMM_LEN, sufficient for the
+		// blacklist prefix match below).
+		proc_path = "/proc/" + std::to_string(cred.pid) + "/comm";
+		int fd = ::open(proc_path.c_str(), O_RDONLY | O_CLOEXEC);
+		if (fd < 0)
+		{
+			eDebug("[eDVBCAHandler] open(%s) failed: %m, treating as legacy client", proc_path.c_str());
+			return false;
+		}
+		n = ::read(fd, exe_path, sizeof(exe_path) - 1);
+		::close(fd);
+		if (n <= 0)
+		{
+			eDebug("[eDVBCAHandler] read(%s) failed: %m, treating as legacy client", proc_path.c_str());
+			return false;
+		}
+		while (n > 0 && (exe_path[n - 1] == '\n' || exe_path[n - 1] == '\r'))
+			--n;
 	}
 	exe_path[n] = '\0';
 
@@ -475,11 +493,15 @@ void eDVBCAHandler::newConnection(int socket)
 
 void eDVBCAHandler::connectionLost(ePMTClient *client)
 {
-	ePtrList<ePMTClient>::iterator it = std::find(clients.begin(), clients.end(), client );
-	if (it != clients.end())
+	if (auto it = std::find(clients.begin(), clients.end(), client); it != clients.end())
 	{
 		delete *it;
 		clients.erase(it);
+	}
+	if (clients.empty())
+	{
+		m_protocol3_established = false;
+		eDebug("[eDVBCAHandler] last Protocol 3 client disconnected, falling back to legacy sendCAPMT");
 	}
 }
 
@@ -564,17 +586,17 @@ int eDVBCAHandler::registerService(const eServiceReferenceDVB &ref, int adapter,
 	 * Unless we have a pmt section in our cache, for this service.
 	 */
 
-	std::map<eServiceReferenceDVB, ePtr<eTable<ProgramMapSection> > >::const_iterator cacheit = pmtCache.find(ref);
-	if (cacheit != pmtCache.end() && cacheit->second)
+	ePtr<eTable<ProgramMapSection> > cachedPmt = pmtCacheLookup(ref);
+	if (cachedPmt)
 	{
 		// When a service is already registered and a new consumer registers for
 		// the same service, the PMT is unchanged so buildCAPMT() would skip
 		// sending ("don't build the same CA PMT twice"). Force the softcam to
 		// restart descrambling so it resends CWs for the new CSA session.
-		if (service_already_registered && servicetype != 7 && servicetype != 8)
+		if (service_already_registered && (servicetype == 0 || servicetype == 12))
 		{
-			// Non-streamserver (Live-TV, PiP): DEFER the CW resend to
-			// handlePMT() so the new CSA session is already activated and
+			// PiP/swap (livetv=0, scrambled_livetv=12): DEFER the CW resend
+			// to handlePMT() so the new CSA session is already activated and
 			// its engine registered with CWHandler when the CW arrives.
 			caservice->m_force_cw_send = true;
 			eDebug("[eDVBCAService] deferred softcam CW resend (re-register, type %d)", servicetype);
@@ -587,7 +609,7 @@ int eDVBCAHandler::registerService(const eServiceReferenceDVB &ref, int adapter,
 			caservice->m_force_cw_send = true;
 			eDebug("[eDVBCAService] forcing softcam CW resend (SR re-register, type %d)", servicetype);
 		}
-		processPMTForService(caservice, cacheit->second);
+		processPMTForService(caservice, cachedPmt);
 	}
 	return 0;
 }
@@ -669,6 +691,10 @@ int eDVBCAHandler::unregisterService(const eServiceReferenceDVB &ref, int adapte
 						it->second = nullptr;
 					}
 
+					/* Clean up caches for this service before deleting */
+					pmtCacheRemove(ref);
+					m_service_caid.erase(caservice->getId());
+
 					delete it->second;
 					services.erase(it);
 
@@ -732,15 +758,56 @@ int eDVBCAHandler::unregisterService(const eServiceReferenceDVB &ref, int adapte
 	return 0;
 }
 
+ePtr<eTable<ProgramMapSection> > eDVBCAHandler::pmtCacheLookup(const eServiceReferenceDVB &ref)
+{
+	for (auto it = pmtCache.begin(); it != pmtCache.end(); ++it)
+	{
+		if (it->first == ref)
+		{
+			/* Move to front (most recently used) */
+			pmtCache.splice(pmtCache.begin(), pmtCache, it);
+			return it->second;
+		}
+	}
+	return nullptr;
+}
+
+void eDVBCAHandler::pmtCacheInsert(const eServiceReferenceDVB &ref, const ePtr<eTable<ProgramMapSection> > &ptr)
+{
+	/* Update existing entry or insert new one at front */
+	for (auto it = pmtCache.begin(); it != pmtCache.end(); ++it)
+	{
+		if (it->first == ref)
+		{
+			it->second = ptr;
+			pmtCache.splice(pmtCache.begin(), pmtCache, it);
+			return;
+		}
+	}
+	pmtCache.emplace_front(ref, ptr);
+
+	/* Evict oldest entries if cache is full */
+	while (pmtCache.size() > PMT_CACHE_MAX)
+		pmtCache.pop_back();
+}
+
+void eDVBCAHandler::pmtCacheRemove(const eServiceReferenceDVB &ref)
+{
+	for (auto it = pmtCache.begin(); it != pmtCache.end(); ++it)
+	{
+		if (it->first == ref)
+		{
+			pmtCache.erase(it);
+			return;
+		}
+	}
+}
+
 void eDVBCAHandler::serviceGone()
 {
 	if (!services.size())
 	{
 		eDebug("[DVBCAHandler] no more services (keeping %zu client connections)", clients.size());
-		if (pmtCache.size() > 500)
-		{
-			pmtCache.clear();
-		}
 	}
 }
 
@@ -860,7 +927,7 @@ void eDVBCAHandler::handlePMT(const eServiceReferenceDVB &ref, ePtr<eTable<Progr
 
 	processPMTForService(it->second, ptr);
 
-	pmtCache[ref] = ptr;
+	pmtCacheInsert(ref, ptr);
 }
 
 void eDVBCAHandler::handlePMT(const eServiceReferenceDVB &ref, ePtr<eDVBService> &dvbservice)
@@ -886,6 +953,7 @@ void eDVBCAHandler::handlePMT(const eServiceReferenceDVB &ref, ePtr<eDVBService>
 eDVBCAService::eDVBCAService(const eServiceReferenceDVB &service, uint32_t id)
 	: eUnixDomainSocket(eApp), m_service(service), m_adapter(0), m_service_type_mask(0), m_prev_build_hash(0), m_crc32(0), m_id(id), m_version(-1), m_retryTimer(eTimer::create(eApp)), m_force_cw_send(false)
 {
+	close(); // Don't keep unused legacy socket in poll set; connectToPath() recreates when needed
 	memset(m_used_demux, 0xFF, sizeof(m_used_demux));
 	memset(m_capmt, 0, sizeof(m_capmt));
 	CONNECT(connectionClosed_, eDVBCAService::connectionLost);
