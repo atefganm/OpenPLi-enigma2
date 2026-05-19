@@ -24,6 +24,7 @@
 
 // Software descrambling
 #include <lib/dvb/csasession.h>
+#include <lib/dvb/csaengine.h>
 #include <lib/service/servicedvbsoftdecoder.h>
 
 		/* for subtitles */
@@ -4085,6 +4086,10 @@ void eDVBServicePlay::setupSpeculativeDescrambling()
 {
 	// Only for Live-TV, not for PVR, streams, StreamRelay
 	if (m_is_pvr || m_is_stream)
+		return;
+
+	// libdvbcsa missing -> software descrambling not possible, skip all setup
+	if (!eDVBCSAEngine::isAvailable())
 		return;
 
 	eDebug("[eDVBServicePlay] Encrypted channel, creating speculative CSA session");
