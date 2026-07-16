@@ -821,12 +821,12 @@ int eTextPara::renderString(const char *string, int rflags, int border, int mark
 								if (!isxdigit((unsigned char)color[codeidx]))
 									break;
 							}
-							isprintable = 0;
 							if (codeidx == 8)
 							{
 								color[8] = '\0';
 								newcolor = gRGB(color).argb();
 								activate_newcolor = true;
+								isprintable = 0;
 								i += 1 + codeidx;
 							}
 							else
