@@ -773,6 +773,7 @@ int eTextPara::renderString(const char *string, int rflags, int border, int mark
 
 	unsigned long newcolor = 0;
 	bool activate_newcolor = false;
+	bool activate_colorreset = false;
 	int nextflags = 0;
 	int pos = 0;
 	int markedlen = 0;
@@ -811,22 +812,34 @@ int eTextPara::renderString(const char *string, int rflags, int border, int mark
 							goto nprint;
 						case 'c':
 						{
-							char color[8];
+							char color[9];
 							int codeidx;
 							for (codeidx = 0; codeidx < 8; codeidx++)
 							{
 								if ((i + 2 + codeidx) == uc_visual.end()) break;
 								color[codeidx] = (char)((*(i + 2 + codeidx)) & 0xff);
+								if (!isxdigit((unsigned char)color[codeidx]))
+									break;
 							}
 							if (codeidx == 8)
 							{
+								color[8] = '\0';
 								newcolor = gRGB(color).argb();
 								activate_newcolor = true;
 								isprintable = 0;
 								i += 1 + codeidx;
 							}
+							else
+							{
+								isprintable = 1;
+							}
 							break;
 						}
+						case 'C':
+							isprintable = 0;
+							activate_colorreset = true;
+							i++;
+							break;
 						default:
 						;
 					}
@@ -881,6 +894,8 @@ nprint:				isprintable=0;
 					++markedpos;
 				}
 			}
+			if (activate_colorreset)
+				flags |= GS_COLORRESET;
 
 			FT_UInt index = 0;
 
@@ -914,6 +929,7 @@ nprint:				isprintable=0;
 			{
 				nextflags = 0;
 				activate_newcolor = false;
+				activate_colorreset = false;
 			}
 		} else if (nextflags&GS_ISFIRST && !glyphs.empty())
 		{
@@ -994,10 +1010,15 @@ void eTextPara::blit(gDC &dc, const ePoint &offset, const gRGB &cbackground, con
 			line_offs = *(line_offs_it++);
 			line_chars = *(line_chars_it++);
 		}
-		if (i->flags & GS_COLORCHANGE)
+		/* don't do colorchanges in borders */
+		if (!border)
 		{
-			/* don't do colorchanges in borders */
-			if (!border)
+			if (i->flags & GS_COLORRESET)
+			{
+				currentforeground = foreground;
+				setcolor = true;
+			}
+			else if (i->flags & GS_COLORCHANGE)
 			{
 				currentforeground = i->newcolor;
 				setcolor = true;

@@ -968,50 +968,37 @@ def InitUsageConfig():
 	)
 	config.softcsa.useStreamRelayWhitelist = ConfigYesNo(default=True)
 
+
 	config.ntp = ConfigSubsection()
 
 	def timesyncChanged(configElement):
-		if configElement.value == "ntp":
-			os.system('ntpd -q')
-			print("[UsageConfig] NTP enabled, DVB time disabled")
-			eDVBLocalTimeHandler.getInstance().setUseDVBTime(False)
-		elif configElement.value == "auto":
-			os.system('ntpd -q')
-			result = ""
-			try:
-				result = subprocess.check_output('ntpq -pn', shell=True, text=True)
-			except subprocess.CalledProcessError as e:
-				print("[Usageconfig]", e)
-			if "No association ID's returned" in result:
-				print("[UsageConfig] NTP disabled, DVB time enabled")
-				eDVBLocalTimeHandler.getInstance().setUseDVBTime(True)
-			else:
-				print("[UsageConfig] NTP enabled, DVB time disabled")
-				eDVBLocalTimeHandler.getInstance().setUseDVBTime(False)
-		else:
-			print("[UsageConfig] NTP disabled, DVB time enabled")
+		if configElement.value == "dvb":
+			ntpHandler.reset()
+			ntpHandler.console.ePopen('/etc/init.d/chronyd status', ntpHandler.chronyStatusFinished, 'disable')
 			eDVBLocalTimeHandler.getInstance().setUseDVBTime(True)
+			print("[UsageConfig] NTP disabled, DVB time enabled")
 
-		eEPGCache.getInstance().timeUpdated()
+		elif configElement.value == "auto":
+			ntpHandler.console.ePopen('/etc/init.d/chronyd status', ntpHandler.chronyStatusFinished, 'enable')
+			eDVBLocalTimeHandler.getInstance().setUseDVBTime(True)
+			print("[UsageConfig] AUTO: NTP enabled, DVB time enabled as fallback")
+			ntpHandler.reset()
+			ntpHandler.check()
+
+		elif configElement.value == "ntp":
+			ntpHandler.reset()
+			ntpHandler.console.ePopen('/etc/init.d/chronyd status', ntpHandler.chronyStatusFinished, 'enable')
+			eDVBLocalTimeHandler.getInstance().setUseDVBTime(False)
+			print("[UsageConfig] NTP enabled, DVB time disabled")
+
+		if configElement.value != "auto":
+			eEPGCache.getInstance().timeUpdated()
 
 	config.ntp.timesync = ConfigSelection(default="auto", choices=[("auto", _("auto")), ("dvb", _("Transponder Time")), ("ntp", _("Internet (ntp)"))])
 	config.ntp.timesync.addNotifier(timesyncChanged)
-	config.ntp.server = ConfigText("pool.ntp.org", fixed_size=False)
-	config.ntp.server_old = ConfigText("pool.ntp.org")
-	def setNTPServer(configElement):
-		if configElement.value != config.ntp.server_old.value and configElement.value != "" and " " not in configElement.value:
-			f = open("/etc/ntp.conf", "r")
-			lst = f.readlines()
-			f = open("/etc/ntp.conf", "w")
-			for x in lst:
-				x1 = x.split()
-				if len(x1) > 1 and x1[0] == "server":
-					x1[1] = configElement.value
-					x = " ".join(x1) +"\n"
-				f.write(x)
-			f.close()
-			config.ntp.server_old.value = configElement.value
-	config.ntp.server.addNotifier(setNTPServer, immediate_feedback=False)
+	config.ntp.server = ConfigText("", fixed_size=False)
+	config.ntp.server.addNotifier(ntpHandler.setServer, initial_call=False, immediate_feedback=False)
+
 
 def updateChoices(sel, choices):
 	if choices:
@@ -1147,3 +1134,82 @@ def dropEPGNewLines(text):
 
 def replaceEPGSeparator(code):
 	return {"newline": "\n", "2newlines": "\n\n", "space": " ", "dash": " - ", "dot": " . ", "asterisk": " * ", "hashtag": " # ", "nothing": ""}.get(code)
+
+
+class NtpHandler:
+	NTP_RETRY_UNIT = 2000      # 2 s
+	NTP_RETRY_MAX = 150000     # 2.5 min
+
+	def __init__(self):
+		self.timer = eTimer()
+		self.console = Console()
+		self.retry = 0
+		self.timer.callback.append(self.check)
+
+	def isUsable(self):
+		try:
+			result = subprocess.check_output(["chronyc", "tracking"], text=True)
+		except subprocess.CalledProcessError:
+			return False
+		return "Leap status     : Normal" in result
+
+	def reset(self):
+		self.retry = 0
+		self.timer.stop()
+
+	def check(self):
+		if config.ntp.timesync.value != "auto":
+			self.reset()
+			return
+
+		if self.isUsable():
+			eDVBLocalTimeHandler.getInstance().setUseDVBTime(False)
+			eEPGCache.getInstance().timeUpdated()
+			print("[UsageConfig] AUTO: NTP usable, DVB time disabled")
+			self.reset()
+		else:
+			print("[UsageConfig] AUTO: NTP not usable yet, DVB time remains enabled")
+			delay = min(self.NTP_RETRY_UNIT * (1 << self.retry), self.NTP_RETRY_MAX)
+			print("[UsageConfig] AUTO: retry NTP check in %d s" % (delay // 1000))
+			self.retry += 1
+			self.timer.start(delay, True)
+
+	def chronyStatusFinished(self, result, retval, action):
+		match action:
+			case 'disable':
+				if retval == 0:
+					self.console.ePopen('/etc/init.d/chronyd stop')
+				self.console.ePopen('update-rc.d chronyd disable 3')
+			case 'enable':
+				self.console.ePopen('update-rc.d chronyd enable 3')
+				if retval != 0:
+					self.console.ePopen('/etc/init.d/chronyd start')
+			case 'sync':
+				if retval == 0:
+					self.console.ePopen('/etc/init.d/chronyd reload')
+				else:
+					self.console.ePopen('/etc/init.d/chronyd start')
+			case _:
+				print("[UsageConfig] Unsupported Chrony status action: %s" % action)
+
+	def setServer(self, configElement):
+		if " " not in configElement.value:
+			f = open("/etc/chrony.conf", "r")
+			lst = f.readlines()
+			f.close()
+
+			f = open("/etc/chrony.conf", "w")
+			for x in lst:
+				x1 = x.split()
+				if len(x1) > 1 and (x1[0] == "server" or x1[0] == "#server"):
+					if configElement.value == "":
+						x1[0] = "#server"
+						x = " ".join(x1) + "\n"
+					else:
+						x = "server %s iburst minpoll 3 prefer\n" % configElement.value
+				f.write(x)
+			f.close()
+			self.console.ePopen('/etc/init.d/chronyd status', self.chronyStatusFinished, 'sync')
+			print("[UsageConfig] NTP enabled, local server is set to: %s" % configElement.value)
+
+ntpHandler = NtpHandler()
