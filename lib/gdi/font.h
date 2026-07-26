@@ -115,7 +115,7 @@ typedef std::vector<pGlyph> glyphString;
 class Font;
 class eLCD;
 
-class eTextPara : public iObject
+class eTextPara: public iObject
 {
 	DECLARE_REF(eTextPara);
 	ePtr<Font> current_font, replacement_font, fallback_font;
@@ -151,9 +151,9 @@ class eTextPara : public iObject
 public:
 	eTextPara(eRect area, ePoint start = ePoint(-1, -1))
 		: current_font(0), replacement_font(0), fallback_font(0),
-		  current_face(0), replacement_face(0), fallback_face(0),
-		  area(area), cursor(start), maximum(0, 0), left(start.x()), charCount(0), totalheight(0),
-		  bboxValid(0), doTopBottomReordering(false), m_offset(0), m_blend(false)
+		current_face(0), replacement_face(0), fallback_face(0),
+		area(area), cursor(start), maximum(0, 0), left(start.x()), charCount(0), totalheight(0),
+		bboxValid(0), doTopBottomReordering(false), m_offset(0), m_blend(false)
 	{
 	}
 	virtual ~eTextPara();
@@ -228,7 +228,7 @@ public:
 	}
 };
 
-class Font : public iObject
+class Font: public iObject
 {
 	DECLARE_REF(Font);
 
