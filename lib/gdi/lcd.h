@@ -50,6 +50,7 @@ public:
 	virtual int setLED(int value, int option) = 0;
 	virtual void setInverted(unsigned char) = 0;
 	virtual void setFlipped(bool) = 0;
+	void setDump(bool); // OpenWebif compatibility
 	virtual void setDump(bool) = 0;
 	virtual void dumpLCD(bool) = 0;
 	virtual int waitVSync() = 0;

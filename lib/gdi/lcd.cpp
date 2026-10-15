@@ -1,5 +1,7 @@
 #include <lib/gdi/lcd.h>
 #include <lib/gdi/epng.h>
+#include <byteswap.h>
+#include <endian.h>
 
 #include <unistd.h>
 #include <fcntl.h>
@@ -357,6 +359,12 @@ eDBoxLCD::~eDBoxLCD()
 		close(lcdfd);
 		lcdfd = -1;
 	}
+}
+
+void eLCD::setDump(bool onoff)
+{
+	if (onoff)
+		dumpLCD(true);
 }
 
 void eDBoxLCD::dumpLCD(bool png)
